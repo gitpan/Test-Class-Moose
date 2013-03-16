@@ -14,7 +14,7 @@ use Test::Class::Moose::Reporting;
 use Test::Class::Moose::Reporting::Class;
 use Test::Class::Moose::Reporting::Method;
 
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -349,7 +349,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-0.02
+0.03
 
 =head1 SYNOPSIS
 
@@ -762,6 +762,11 @@ that, run the test suite in a subtest.
     diag "Number of tests:        " . $reporting->num_tests;
 
     done_testing;
+
+=head1 EXTRAS
+
+If you would like C<Test::Class::Moose> to take care of loading your classes
+for you, see C<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 TODO
 
