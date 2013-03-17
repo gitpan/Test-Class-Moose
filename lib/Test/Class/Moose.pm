@@ -14,7 +14,7 @@ use Test::Class::Moose::Reporting;
 use Test::Class::Moose::Reporting::Class;
 use Test::Class::Moose::Reporting::Method;
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -313,9 +313,11 @@ sub test_classes {
 sub test_methods {
     my $self = shift;
 
-    my @method_list =
-      grep { /^test_/ and not $TEST_CONTROL_METHODS->()->{$_} }
-      $self->meta->get_method_list;
+    # must be test_ and cannot be methods defined in this package
+    my @method_list = 
+      grep { /^test_/ and not __PACKAGE__->can($_) }
+      map  { $_->name } 
+      $self->meta->get_all_methods;
 
     # eventually we'll want to control the test method order
 
@@ -349,7 +351,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-0.03
+0.04
 
 =head1 SYNOPSIS
 
@@ -714,7 +716,7 @@ We use nested tests (subtests) at each level:
     # Total tests run: 11
     ok
     All tests successful.
-    Files=1, Tests=2,  2 wallclock secs ( 0.03 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
+    Files=1, Tests=2,  2 wallclock secs ( 0.04 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
     Result: PASS
 
 =head1 REPORTING
