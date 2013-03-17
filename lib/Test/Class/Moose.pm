@@ -14,7 +14,7 @@ use Test::Class::Moose::Reporting;
 use Test::Class::Moose::Reporting::Class;
 use Test::Class::Moose::Reporting::Method;
 
-our $VERSION = 0.04;
+our $VERSION = 0.05;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -300,7 +300,7 @@ sub test_classes {
     while ( my ( $class, $metaclass ) = each %metaclasses ) {
         next unless $metaclass->can('superclasses');
         next if $class eq __PACKAGE__;
-        next if $class eq 'main';        # XXX track down this bug
+        next if $class eq 'main';        # XXX no longer needed?
 
         push @classes => $class
           if grep { $_ eq __PACKAGE__ } $metaclass->linearized_isa;
@@ -313,13 +313,18 @@ sub test_classes {
 sub test_methods {
     my $self = shift;
 
-    # must be test_ and cannot be methods defined in this package
-    my @method_list = 
-      grep { /^test_/ and not __PACKAGE__->can($_) }
-      map  { $_->name } 
-      $self->meta->get_all_methods;
+    my @method_list;
+    foreach my $method ( $self->meta->get_all_methods ) {
 
-    # eventually we'll want to control the test method order
+        # attributes cannot be test methods
+        next if $method->isa('Moose::Meta::Method::Accessor');
+        my $name = $method->name;
+        next unless $name =~ /^test_/;
+
+        # don't use anything defined in this package
+        next if __PACKAGE__->can($name);
+        push @method_list => $name;
+    }
 
     if ( my $include = $self->test_configuration->include ) {
         @method_list = grep {/$include/} @method_list;
@@ -351,7 +356,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-0.04
+0.05
 
 =head1 SYNOPSIS
 
@@ -716,7 +721,7 @@ We use nested tests (subtests) at each level:
     # Total tests run: 11
     ok
     All tests successful.
-    Files=1, Tests=2,  2 wallclock secs ( 0.04 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
+    Files=1, Tests=2,  2 wallclock secs ( 0.03 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
     Result: PASS
 
 =head1 REPORTING
