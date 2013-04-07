@@ -1,30 +1,19 @@
 package Test::Class::Moose::Role::Reporting;
+{
+  $Test::Class::Moose::Role::Reporting::VERSION = '0.07';
+}
+
+# ABSTRACT: Reporting gathering role
 
 use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
-use Test::Class::Moose::Reporting::Time;
+use Test::Class::Moose::Report::Time;
+with 'Test::Class::Moose::Role::Timing';
 
 has 'name' => (
     is       => 'ro',
     isa      => 'Str',
     required => 1,
-);
-
-has 'start_benchmark' => (
-    is  => 'rw',
-    isa => 'Benchmark',
-);
-
-has 'end_benchmark' => (
-    is  => 'rw',
-    isa => 'Benchmark',
-    trigger => sub {
-        my $self = shift;
-        my $time = Test::Class::Moose::Reporting::Time->new(
-            timediff( $self->end_benchmark, $self->start_benchmark ) 
-        );
-        $self->time($time);
-    },
 );
 
 has 'notes' => (
@@ -39,22 +28,27 @@ has skipped => (
     predicate => 'is_skipped',
 );
 
-has 'time' => (
-    is  => 'rw',
-    isa => 'Test::Class::Moose::Reporting::Time',
-);
-
 1;
 
 __END__
+
+=pod
 
 =head1 NAME
 
 Test::Class::Moose::Role::Reporting - Reporting gathering role
 
+=head1 VERSION
+
+version 0.07
+
 =head1 DESCRIPTION
 
 Note that everything in here is experimental and subject to change.
+
+=head1 IMPLEMENTS
+
+L<Test::Class::Moose::Role::Timing>.
 
 =head1 REQUIRES
 
@@ -68,14 +62,6 @@ None.
 
 The "name" of the statistic. For a class, this should be the class name. For a
 method, it should be the method name.
-
-=head2 C<start_benchmark>
-
-The starting C<Benchmark> object.
-
-=head2 C<end_benchmark>
-
-The ending C<Benchmark> object.
 
 =head2 C<notes>
 
@@ -91,5 +77,20 @@ Returns true if the class or method is skipped.
 
 =head2 C<time>
 
-Returns a C<Test::Class::Moose::Reporting::Time> object. This object
+(From L<Test::Class::Moose::Role::Timing>)
+
+Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method.
+
+=head1 AUTHOR
+
+Curtis "Ovid" Poe <ovid@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

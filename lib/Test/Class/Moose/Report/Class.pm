@@ -1,10 +1,13 @@
-package Test::Class::Moose::Reporting::Class;
+package Test::Class::Moose::Report::Class;
+{
+  $Test::Class::Moose::Report::Class::VERSION = '0.07';
+}
+
+# ABSTRACT: Reporting on test classes
 
 use Moose;
 use Carp;
 use namespace::autoclean;
-
-our $VERSION = 0.06;
 
 with qw(
   Test::Class::Moose::Role::Reporting
@@ -13,7 +16,7 @@ with qw(
 has test_methods => (
     is      => 'rw',
     traits  => ['Array'],
-    isa     => 'ArrayRef[Test::Class::Moose::Reporting::Method]',
+    isa     => 'ArrayRef[Test::Class::Moose::Report::Method]',
     default => sub { [] },
     handles => {
         all_test_methods => 'elements',
@@ -32,16 +35,17 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
-
 __END__
+
+=pod
 
 =head1 NAME
 
-Test::Class::Moose::Reporting::class - Reporting on test classes
+Test::Class::Moose::Report::Class - Reporting on test classes
 
 =head1 VERSION
 
-0.06
+version 0.07
 
 =head1 DESCRIPTION
 
@@ -49,14 +53,18 @@ Should be considered experimental and B<read only>.
 
 =head1 IMPLEMENTS
 
-C<Test::Class::Moose::Role::Reporting>.
+L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
 =head2 C<test_methods>
 
-Returns an array reference of L<Test::Class::Moose::Reporting::Method>
+Returns an array reference of L<Test::Class::Moose::Report::Method>
 objects.
+
+=head2 C<all_test_methods>
+
+Returns an array of L<Test::Class::Moose::Report::Method> objects.
 
 =head2 C<error>
 
@@ -65,3 +73,16 @@ If this class could not be run, returns a string explaining the error.
 =head2 C<has_error>
 
 Returns a boolean indicating whether or not the class has an error.
+
+=head1 AUTHOR
+
+Curtis "Ovid" Poe <ovid@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

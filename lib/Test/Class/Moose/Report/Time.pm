@@ -1,4 +1,9 @@
-package Test::Class::Moose::Reporting::Time;
+package Test::Class::Moose::Report::Time;
+{
+  $Test::Class::Moose::Report::Time::VERSION = '0.07';
+}
+
+# ABSTRACT: Reporting object for timing
 
 use Moose;
 use Benchmark qw(timestr :hireswallclock);
@@ -41,9 +46,15 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=pod
+
 =head1 NAME
 
-Test::Class::Moose::Reporting::Time - Reporting object for timing
+Test::Class::Moose::Report::Time - Reporting object for timing
+
+=head1 VERSION
+
+version 0.07
 
 =head1 DESCRIPTION
 
@@ -58,13 +69,13 @@ All times are in seconds.
     my $real = $time->real;
 
 Returns the "real" amount of time the class or method took to run.
-    
+
 =head2 C<user>
 
     my $user = $time->user;
 
 Returns the "user" amount of time the class or method took to run.
-    
+
 =head2 C<system>
 
     my $system = $time->system;
@@ -79,3 +90,16 @@ Returns the returns a human-readable representation of the time this class or
 method took to run. Something like:
 
   0.00177908 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
+
+=head1 AUTHOR
+
+Curtis "Ovid" Poe <ovid@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

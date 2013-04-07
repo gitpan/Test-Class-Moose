@@ -1,10 +1,13 @@
 package Test::Class::Moose::Config;
+{
+  $Test::Class::Moose::Config::VERSION = '0.07';
+}
+
+# ABSTRACT: Configuration information for Test::Class::Moose
 
 use 5.10.0;
 use Moose;
 use namespace::autoclean;
-
-our $VERSION = 0.06;
 
 has 'show_timing' => (
     is  => 'ro',
@@ -57,15 +60,16 @@ sub args {
 __PACKAGE__->meta->make_immutable;
 
 1;
-__END__
+
+=pod
 
 =head1 NAME
 
-Test::Class::Moose::Config - Configuration information for Test::Class
+Test::Class::Moose::Config - Configuration information for Test::Class::Moose
 
 =head1 VERSION
 
-0.06
+version 0.07
 
 =head1 SYNOPSIS
 
@@ -114,10 +118,6 @@ Boolean. Will run tests in a random order.
 Returns a hash reference of the args used to build the configuration. Used in
 testing. You probably won't need it.
 
-=head1 AUTHOR
-
-Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
-
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-test-class-moose at rt.cpan.org>,
@@ -156,16 +156,20 @@ L<http://search.cpan.org/dist/Test-Class-Moose/>
 
 =head1 ACKNOWLEDGEMENTS
 
-=head1 LICENSE AND COPYRIGHT
+=head1 AUTHOR
 
-Copyright 2012 Curtis "Ovid" Poe.
+Curtis "Ovid" Poe <ovid@cpan.org>
 
-This program is free software; you can redistribute it and/or modify it under
-the terms of either: the GNU General Public License as published by the Free
-Software Foundation; or the Artistic License.
+=head1 COPYRIGHT AND LICENSE
 
-See http://dev.perl.org/licenses/ for more information.
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+__END__
+
 
 1;

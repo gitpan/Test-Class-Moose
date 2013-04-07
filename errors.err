@@ -1,0 +1,2 @@
+lib/Test/Class/Moose.pm:46:Unused variable my $class
+lib/Test/Class/Moose.pm:284:Unused variable my $self

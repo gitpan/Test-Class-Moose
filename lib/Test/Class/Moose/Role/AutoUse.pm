@@ -1,8 +1,11 @@
 package Test::Class::Moose::Role::AutoUse;
+{
+  $Test::Class::Moose::Role::AutoUse::VERSION = '0.07';
+}
+
+# ABSTRACT: Automatically load the classes you're testing
 
 use Moose::Role;
-
-our $VERSION = 0.06;
 
 has 'class_name' => (
     is      => 'ro',
@@ -30,8 +33,8 @@ sub get_class_name_to_use {
 }
 
 1;
-__END__
 
+=pod
 
 =head1 NAME
 
@@ -39,7 +42,7 @@ Test::Class::Moose::Role::AutoUse - Automatically load the classes you're testin
 
 =head1 VERSION
 
-0.06
+version 0.07
 
 =head1 SYNOPSIS
 
@@ -81,7 +84,7 @@ used and tested.
 If you don't like how the name is calculated, you can override this method in
 your code.
 
-Warning: Don't use C<Test::> as a prefix. There are already plenty of modules
+Warning: Don't use L<Test::> as a prefix. There are already plenty of modules
 in that namespace and you could accidentally cause a collision.
 
 =head1 RATIONALE
@@ -116,7 +119,7 @@ Without this role, it would often look like this:
 That's OK, but there are a couple of issues here.
 
 First, if you need to rename your class, you must change this name repeatedly.
-With C<Test::Class::Moose::Role::AutoUse>, you only rename the test class name
+With L<Test::Class::Moose::Role::AutoUse>, you only rename the test class name
 to correspond to the new class name and you're done.
 
 The first problem is not very serious, but the second problem is. Let's say
@@ -134,7 +137,7 @@ C<TestsFor::Person::Employee> will inherit the
 C<TestsFor::Person->test_constructor()> method. Except as you can see in our
 example above, we've B<hardcoded> the class name, meaning that we won't be
 testing our code appropriately. The code using the
-C<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the classname (at
+L<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the classname (at
 least, it shouldn't), so when we call the inherited
 C<TestsFor::Person::Employee->test_constructor()> method, it constructs a
 C<TestsFor::Person::Employee> object, not a C<TestsFor::Person> object.
@@ -158,10 +161,6 @@ Some might argue that this is a strawman and we should have done this:
 Yes, that's correct. We should have done this, except that now it's almost
 identical to the AutoUse code, except that the first time you forget to C<use>
 the class in question, you'll be unhappy. Why not automate this?
-
-=head1 AUTHOR
-
-Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
 
 =head1 BUGS
 
@@ -199,16 +198,20 @@ L<http://search.cpan.org/dist/Test-Class-Moose/>
 
 =back
 
-=head1 LICENSE AND COPYRIGHT
+=head1 AUTHOR
 
-Copyright 2012 Curtis "Ovid" Poe.
+Curtis "Ovid" Poe <ovid@cpan.org>
 
-This program is free software; you can redistribute it and/or modify it under
-the terms of either: the GNU General Public License as published by the Free
-Software Foundation; or the Artistic License.
+=head1 COPYRIGHT AND LICENSE
 
-See http://dev.perl.org/licenses/ for more information.
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+__END__
+
 
 1;

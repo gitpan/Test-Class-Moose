@@ -1,4 +1,9 @@
 package Test::Class::Moose;
+{
+  $Test::Class::Moose::VERSION = '0.07';
+}
+
+# ABSTRACT: Test::Class + Moose
 
 use 5.10.0;
 use Moose;
@@ -10,21 +15,24 @@ use Test::Builder;
 use Test::Most;
 use Try::Tiny;
 use Test::Class::Moose::Config;
-use Test::Class::Moose::Reporting;
-use Test::Class::Moose::Reporting::Class;
-use Test::Class::Moose::Reporting::Method;
-
-our $VERSION = 0.06;
+use Test::Class::Moose::Report;
+use Test::Class::Moose::Report::Class;
+use Test::Class::Moose::Report::Method;
 
 has 'test_configuration' => (
     is  => 'ro',
     isa => 'Test::Class::Moose::Config',
 );
 
-has 'test_reporting' => (
-    is  => 'ro',
-    isa => 'Test::Class::Moose::Reporting',
+has 'test_report' => (
+    is      => 'ro',
+    isa     => 'Test::Class::Moose::Report',
+    default => sub { Test::Class::Moose::Report->new },
 );
+sub test_reporting {
+    carp "test_reporting() deprecated as of version 0.07. Use test_report().";
+    goto &test_report;
+}
 
 has 'test_class' => (
     is  => 'rw',
@@ -35,15 +43,6 @@ has 'test_skip' => (
     is      => 'rw',
     isa     => 'Str',
     clearer => 'test_skip_clear',
-);
-
-has 'test_use' => (
-    is      => 'ro',
-    isa     => 'CodeRef',
-    default => sub {
-        sub { }
-    },
-    documentation => 'Deliberately undocumented and experimental',
 );
 
 sub import {
@@ -58,7 +57,8 @@ END
     croak($@) if $@;
     strict->import;
     warnings->import;
-    if ( my $parent = ( delete $arg_for{parent} || delete $arg_for{extends} ) )
+    if ( my $parent
+        = ( delete $arg_for{parent} || delete $arg_for{extends} ) )
     {
         my @parents = 'ARRAY' eq ref $parent ? @$parent : $parent;
         $caller->meta->superclasses(@parents);
@@ -72,10 +72,7 @@ around 'BUILDARGS' => sub {
     my $orig  = shift;
     my $class = shift;
     return $class->$orig(
-        {   test_configuration => Test::Class::Moose::Config->new(@_),
-            test_reporting     => Test::Class::Moose::Reporting->new,
-        }
-    );
+        { test_configuration => Test::Class::Moose::Config->new(@_) } );
 };
 
 sub BUILD {
@@ -128,14 +125,14 @@ my $RUN_TEST_METHOD = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->test_class;
-    my $reporting =
-      Test::Class::Moose::Reporting::Method->new( { name => $test_method } );
+    my $report  = Test::Class::Moose::Report::Method->new(
+        { name => $test_method } );
 
     my $builder = $self->test_configuration->builder;
     $test_instance->test_skip_clear;
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
-        $reporting
+        $report
     );
     my $num_tests;
 
@@ -144,16 +141,19 @@ my $RUN_TEST_METHOD = sub {
         $test_method,
         sub {
             if ( my $message = $test_instance->test_skip ) {
-                $reporting->skipped($message);
+                $report->skipped($message);
                 $builder->plan( skip_all => $message );
                 return;
             }
             my $start = Benchmark->new;
-            $reporting->start_benchmark($start);
+            $report->_start_benchmark($start);
 
             my $old_test_count = $builder->current_test;
             try {
-                $test_instance->$test_method;
+                $test_instance->$test_method($report);
+                if ( $report->has_plan ) {
+                    $builder->plan( tests => $report->tests_planned );
+                }
             }
             catch {
                 fail "$test_method failed: $_";
@@ -161,73 +161,59 @@ my $RUN_TEST_METHOD = sub {
             $num_tests = $builder->current_test - $old_test_count;
 
             my $end = Benchmark->new;
-            $reporting->end_benchmark($end);
+            $report->_end_benchmark($end);
             if ( $self->test_configuration->show_timing ) {
                 my $time = timestr( timediff( $end, $start ) );
                 $self->test_configuration->builder->diag(
-                    $reporting->name . ": $time" );
+                    $report->name . ": $time" );
             }
         },
     );
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
-        $reporting
+        $report
     );
-    $self->test_reporting->current_class->add_test_method($reporting);
-    $reporting->num_tests($num_tests) unless $reporting->is_skipped;
-    return $reporting;
-};
-
-# XXX Deliberately undocumented and experimental
-my $MAYBE_USE_TEST_CLASS = sub {
-    local *__ANON__ = 'ANON_MAYBE_USE_TEST_CLASS';
-    my ( $self, $report ) = @_;
-
-    my $class = $self->test_use->($report)
-        or return $self;
-    eval "use $class";
-    if ( my $error = $@ ) {
-        $report->error($error);
-        return;
+    $self->test_report->current_class->add_test_method($report);
+    if ( !$report->is_skipped ) {
+        $report->num_tests_run($num_tests);
+        if ( !$report->has_plan ) {
+            $report->tests_planned($num_tests);
+        }
     }
-    return $self;
+    return $report;
 };
 
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
-    my  ( $self, $test_class ) = @_;
+    my ( $self, $test_class ) = @_;
     my $builder   = $self->test_configuration->builder;
-    my $reporting = $self->test_reporting;
+    my $report = $self->test_report;
 
     return sub {
 
         # set up test class reporting
-        my $test_instance =
-          $test_class->new( $self->test_configuration->args );
-        my $reporting_class = Test::Class::Moose::Reporting::Class->new(
+        my $test_instance
+          = $test_class->new( $self->test_configuration->args );
+        my $report_class = Test::Class::Moose::Report::Class->new(
             {   name => $test_class,
             }
         );
-        $reporting->add_test_class($reporting_class);
+        $report->add_test_class($report_class);
         my @test_methods = $test_instance->test_methods;
         unless (@test_methods) {
             my $message = "Skipping '$test_class': no test methods found";
-            $reporting_class->skipped($message);
+            $report_class->skipped($message);
             $builder->plan( skip_all => $message );
             return;
         }
-        if ( not $self->$MAYBE_USE_TEST_CLASS($reporting) ) {
-            fail($reporting->error);
-            return;
-        }
         my $start = Benchmark->new;
-        $reporting_class->start_benchmark($start);
+        $report_class->_start_benchmark($start);
 
-        $reporting->inc_test_methods( scalar @test_methods );
+        $report->_inc_test_methods( scalar @test_methods );
 
         # startup
         if (!$test_instance->$RUN_TEST_CONTROL_METHOD(
-                'test_startup', $reporting_class
+                'test_startup', $report_class
             )
           )
         {
@@ -236,8 +222,9 @@ my $RUN_TEST_CLASS = sub {
         }
 
         if ( my $message = $test_instance->test_skip ) {
+
             # test_startup skipped the class
-            $reporting_class->skipped($message);
+            $report_class->skipped($message);
             $builder->plan( skip_all => $message );
             return;
         }
@@ -246,22 +233,22 @@ my $RUN_TEST_CLASS = sub {
 
         # run test methods
         foreach my $test_method (@test_methods) {
-            my $reporting_method = $self->$RUN_TEST_METHOD(
+            my $report_method = $self->$RUN_TEST_METHOD(
                 $test_instance,
                 $test_method
             );
-            $reporting->inc_tests( $reporting_method->num_tests );
+            $report->_inc_tests( $report_method->num_tests_run );
         }
 
         # shutdown
         $test_instance->$RUN_TEST_CONTROL_METHOD(
             'test_shutdown',
-            $reporting_class
+            $report_class
         ) or fail("test_shutdown() failed");
 
         # finalize reporting
         my $end = Benchmark->new;
-        $reporting_class->end_benchmark($end);
+        $report_class->_end_benchmark($end);
         if ( $self->test_configuration->show_timing ) {
             my $time = timestr( timediff( $end, $start ) );
             $self->test_configuration->builder->diag("$test_class: $time");
@@ -272,6 +259,8 @@ my $RUN_TEST_CLASS = sub {
 sub runtests {
     my $self = shift;
 
+    my $report = $self->test_report;
+    $report->_start_benchmark( Benchmark->new );
     my @test_classes = $self->test_classes;
 
     my $builder = $self->test_configuration->builder;
@@ -284,26 +273,23 @@ sub runtests {
         );
     }
 
-    my $reporting = $self->test_reporting;
     $builder->diag(<<"END") if $self->test_configuration->statistics;
-Test classes:    @{[ $reporting->num_test_classes ]}
-Test methods:    @{[ $reporting->num_test_methods ]}
-Total tests run: @{[ $reporting->num_tests ]}
+Test classes:    @{[ $report->num_test_classes ]}
+Test methods:    @{[ $report->num_test_methods ]}
+Total tests run: @{[ $report->num_tests_run ]}
 END
     $builder->done_testing;
+    $report->_end_benchmark( Benchmark->new );
+    return $self;
 }
 
 sub test_classes {
     my $self        = shift;
     my %metaclasses = Class::MOP::get_all_metaclasses();
     my @classes;
-    while ( my ( $class, $metaclass ) = each %metaclasses ) {
-        next unless $metaclass->can('superclasses');
+    foreach my $class ( keys %metaclasses ) {
         next if $class eq __PACKAGE__;
-        next if $class eq 'main';        # XXX no longer needed?
-
-        push @classes => $class
-          if grep { $_ eq __PACKAGE__ } $metaclass->linearized_isa;
+        push @classes => $class if $class->isa(__PACKAGE__);
     }
 
     # eventually we'll want to control the test class order
@@ -348,7 +334,7 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
-__END__
+=pod
 
 =head1 NAME
 
@@ -356,27 +342,33 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-0.06
+version 0.07
 
 =head1 SYNOPSIS
 
- package TestsFor::Some::Class;
- use Test::Class::Moose;
+    package TestsFor::DateTime;
+    use Test::Class::Moose;
+    use DateTime;
 
- sub test_me {
-     my $test  = shift;
-     my $class = $test->test_class;
-     ok 1, "test_me() ran ($class)";
-     ok 2, "this is another test ($class)";
- }
+    # this usually goes in a base class
+    INIT { Test::Class::Moose->new->runtests }
 
- sub test_this_baby {
-     my $test  = shift;
-     my $class = $test->test_class;
-     is 2, 2, "whee! ($class)";
- }
+    # methods that begin with test_ are test methods.
+    sub test_constructor {
+        my ( $test, $report ) = @_;
+        $report->plan(3);    # strictly optional
 
- ;
+        can_ok 'DateTime', 'new';
+        my %args = (
+            year  => 1967,
+            month => 6,
+            day   => 20,
+        );
+        isa_ok my $date = DateTime->new(%args), 'DateTime';
+        is $date->year, $args{year}, '... and the year should be correct';
+    }
+
+    1;
 
 =head1 DESCRIPTION
 
@@ -421,6 +413,26 @@ Each test class is a subtest declaring a plan of the number of test methods.
 
 Each test method relies on an implicit C<done_testing> call.
 
+If you prefer, you can declare a plan in a test method:
+
+    sub test_something {
+        my ( $test, $report ) = @_;
+        $report->plan($num_tests);
+        ...
+    }
+
+You can only call C<plan()> once for a given test method report. Otherwise,
+you must call C<add_to_plan()>. For example, with a method modifier:
+
+    after 'test_something' => sub {
+        my ( $test, $report ) = @_;
+        $report->add_to_plan($num_extra_tests);
+    };
+
+Please note that if you call C<plan>, the plan will still show up at the end
+of the subtest run, but you'll get the desired failure if the number of tests
+run does not match the plan.
+
 =head2 Inheriting from another Test::Class::Moose class
 
 List it as the C<extends> in the import list.
@@ -461,9 +473,9 @@ fails, the class/method will fail and testing for that class should stop.
 
 B<Every> test control method will be passed two arguments. The first is the
 C<$test> invocant. The second is an object implementing
-C<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
-is a handy way of recording information you later wish to use if you call
-C<< $test_suite->test_reporting >>.
+L<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
+is a handy way of recording information you later wish to use if you call C<<
+$test_suite->test_report >>.
 
 These are:
 
@@ -472,53 +484,53 @@ These are:
 =item * C<test_startup>
 
  sub test_startup {
-    my ( $test, $reporting ) = @_;
+    my ( $test, $report ) = @_;
     $test->next::method;
     # more startup
  }
 
 Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
-C<< $test->test_class >>, or the C<name> method on the C<$reporting> object.
+C<< $test->test_class >>, or the C<name> method on the C<$report> object.
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Class> object.
 
 =item * C<test_setup>
 
  sub test_setup {
-    my ( $test, $reporting ) = @_;
+    my ( $test, $report ) = @_;
     $test->next::method;
     # more setup
  }
 
 Runs at the start of each test method. If you must know the name of the test
-you're about to run, you can call C<< $reporting->name >>.
+you're about to run, you can call C<< $report->name >>.
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_teardown>
 
  sub test_teardown {
-    my ( $test, $reporting ) = @_;
+    my ( $test, $report ) = @_;
     # more teardown
     $test->next::method;
  }
 
 Runs at the end of each test method. 
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_shutdown>
 
  sub test_shutdown {
-     my ( $test, $reporting ) = @_;
+     my ( $test, $report ) = @_;
      # more teardown
      $test->next::method;
  }
 
 Runs at the end of each test class. 
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Class> object.
 
 =back
 
@@ -546,7 +558,7 @@ Or:
  $test_suite->runtests;
 
 The attributes passed in the constructor are not directly available from the
-C<Test::Class::Moose> instance. They're available in
+L<Test::Class::Moose> instance. They're available in
 L<Test::Class::Moose::Config> and to avoid namespace pollution, we do I<not>
 delegate the attributes directly as a result. If you need them at runtime,
 you'll need to access the C<test_configuration> attribute:
@@ -573,7 +585,7 @@ Boolean. Will run test methods in a random order.
 =item * C<builder>
 
 Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
-want, but it must conform to the C<Test::Builder> interface. We make no
+want, but it must conform to the L<Test::Builder> interface. We make no
 guarantees about which part of the interface it needs.
 
 =item * C<include>
@@ -607,16 +619,16 @@ included. B<However>, they must still start with C<test_>. See C<include>.
 If you wish to skip a class, set the reason in the C<test_startup> method.
 
     sub test_startup {
-        my ( $self, $reporting ) = @_;
+        my ( $self, $report ) = @_;
         $test->test_skip("I don't want to run this class");
     }
 
 If you wish to skip an individual method, do so in the C<test_setup> method.
 
     sub test_setup {
-        my ( $self, $reporting ) = @_;
+        my ( $self, $report ) = @_;
 
-        if ( 'test_time_travel' eq $reporting->name ) {
+        if ( 'test_time_travel' eq $report->name ) {
             $test->test_skip("Time travel not yet available");
         }
     }
@@ -626,20 +638,20 @@ If you wish to skip an individual method, do so in the C<test_setup> method.
 ... but probably shouldn't.
 
 As a general rule, methods beginning with C</^test_/> are reserved for
-C<Test::Class::Moose>. This makes it easier to remember what you can and
+L<Test::Class::Moose>. This makes it easier to remember what you can and
 cannot override.
 
 =head2 C<test_configuration>
 
  my $test_configuration = $test->test_configuration;
 
-Returns the C<Test::Class::Moose::Config> object.
+Returns the L<Test::Class::Moose::Config> object.
 
-=head2 C<test_reporting>
+=head2 C<test_report>
 
- my $reporting = $test->test_reporting;
+ my $report = $test->test_report;
 
-Returns the C<Test::Class::Moose::Reporting> object. Useful if you want to do
+Returns the L<Test::Class::Moose::Report> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 C<statistics> boolean option.
 
@@ -654,7 +666,7 @@ applying a role at runtime) and don't want to lose the original class name.
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
-C<Test::Class::Moose>
+L<Test::Class::Moose>
 
 =head2 C<test_methods>
 
@@ -670,10 +682,12 @@ yourself.
 If you really, really want to change how this module works, you can override
 the C<runtests> method. We don't recommend it.
 
+Returns the L<Test::Class::Moose> instance.
+
 =head2 C<import>
 
 Sadly, we have an C<import> method. This is used to automatically provide you
-with all of the C<Test::Most> behavior.
+with all of the L<Test::Most> behavior.
 
 =head1 SAMPLE TAP OUTPUT
 
@@ -726,11 +740,14 @@ We use nested tests (subtests) at each level:
 
 =head1 REPORTING
 
+See L<Test::Class::Moose::Report> for more detailed information on reporting.
+
 Reporting features are subject to change.
 
 Sometimes you want more information about your test classes, it's time to do
 some reporting. Maybe you even want some tests for your reporting. If you do
-that, run the test suite in a subtest.
+that, run the test suite in a subtest (because the plans will otherwise be
+wrong).
 
     #!/usr/bin/env perl
     use lib 'lib';
@@ -741,9 +758,9 @@ that, run the test suite in a subtest.
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
     };
-    my $reporting = $test_suite->test_reporting;
+    my $report = $test_suite->test_report;
 
-    foreach my $class ( $reporting->all_test_classes ) {
+    foreach my $class ( $report->all_test_classes ) {
         my $class_name = $class->name;
         ok !$class->is_skipped, "$class_name was not skipped";
 
@@ -764,24 +781,31 @@ that, run the test suite in a subtest.
         my $system = $time->system;
         # do with these as you will
     }
-    diag "Number of test classes: " . $reporting->num_test_classes;
-    diag "Number of test methods: " . $reporting->num_test_methods;
-    diag "Number of tests:        " . $reporting->num_tests;
+    diag "Number of test classes: " . $report->num_test_classes;
+    diag "Number of test methods: " . $report->num_test_methods;
+    diag "Number of tests:        " . $report->num_tests;
 
     done_testing;
 
+If you just want to output reporting information, you do not need to run the
+test suite in a subtest:
+
+    my $test_suite = Test::Class::Moose->new->runtests;
+    my $report     = $test_suite->test_report;
+    ...
+
+Or even shorter:
+
+    my $report = Test::Class::Moose->new->runtests->test_report;
+
 =head1 EXTRAS
 
-If you would like C<Test::Class::Moose> to take care of loading your classes
-for you, see C<Test::Class::Moose::Role::AutoUse> in this distribution.
+If you would like L<Test::Class::Moose> to take care of loading your classes
+for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 TODO
 
 All TODO items have currently been implemented.
-
-=head1 AUTHOR
-
-Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
 
 =head1 BUGS
 
@@ -819,6 +843,31 @@ L<http://search.cpan.org/dist/Test-Class-Moose/>
 
 =back
 
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<Test::Routine>
+
+I always pointed people to this when they would ask about L<Test::Class> +
+L<Moose>, but I would always hear "that's not quite what I'm looking for".
+I don't quite understand what the reasoning was, but I strongly encourage you
+to take a look at L<Test::Routine>.
+
+=item * L<Test::Roo>
+
+L<Test::Routine>, but with L<Moo> instead of L<Moose>.
+
+=item * L<Test::Class>
+
+xUnit-style testing in Perl.
+
+=item * L<Test::Class::Most>
+
+L<Test::Class> + L<Test::Most>.
+
+=back
+
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Tom Beresford (beresfordt) for spotting an issue when a class has no
@@ -828,16 +877,20 @@ Thanks to Judioo for adding the randomize attribute.
 
 Thanks to Adrian Howard for L<Test::Class>.
 
-=head1 LICENSE AND COPYRIGHT
+=head1 AUTHOR
 
-Copyright 2012 Curtis "Ovid" Poe.
+Curtis "Ovid" Poe <ovid@cpan.org>
 
-This program is free software; you can redistribute it and/or modify it under
-the terms of either: the GNU General Public License as published by the Free
-Software Foundation; or the Artistic License.
+=head1 COPYRIGHT AND LICENSE
 
-See http://dev.perl.org/licenses/ for more information.
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+__END__
+
 
 1;
