@@ -1,6 +1,6 @@
 package Test::Class::Moose::Report;
 {
-  $Test::Class::Moose::Report::VERSION = '0.07';
+  $Test::Class::Moose::Report::VERSION = '0.08';
 }
 
 # ABSTRACT: Test information for Test::Class::Moose
@@ -72,7 +72,7 @@ Test::Class::Moose::Report - Test information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -163,12 +163,12 @@ Integer. The number of test methods run.
 
 Integer. The number of tests run.
 
-=head2 C<time>
+=head3 C<time>
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of the entire test suite.
 
-=head2 Test Report Class
+=head2 Test Report for Classes
 
 Each L<Test::Class::Moose::Report::Class> instance provides the following
 methods:
@@ -211,7 +211,7 @@ Returns true if the class or method is skipped.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class.
 
-=head2 Test Report Methods
+=head2 Test Report for Methods
 
 Each L<Test::Class::Moose::Report::Method> instance provides the following
 methods:
@@ -237,7 +237,7 @@ Returns true if the class or method is skipped.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method.
 
-=head2 Test Report Time
+=head2 Test Report for Time
 
 Each L<Test::Class::Moose::Report::Time> instance has the following methods:
 

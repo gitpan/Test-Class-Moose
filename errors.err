@@ -1,2 +1,4 @@
-lib/Test/Class/Moose.pm:46:Unused variable my $class
-lib/Test/Class/Moose.pm:284:Unused variable my $self
+lib/Test/Class/Moose.pm:84:Unused variable my $class
+lib/Test/Class/Moose.pm:328:Unused variable my $self
+lib/Test/Class/Moose.pm:349:Unused variable my $subref
+lib/Test/Class/Moose.pm:343:Unused variable my @tags

@@ -4,24 +4,29 @@ author:
   - "Curtis \"Ovid\" Poe <ovid@cpan.org>"
 build_requires:
   Carp::Always: 0
+  Data::Dumper: 0
   Scalar::Util: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300030, CPAN::Meta::Converter version 2.120630'
+generated_by: 'Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.120630'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: Test-Class-Moose
+recommends:
+  Sub::Attribute: 0.05
 requires:
   Benchmark: 0
   Carp: 0
   File::Find: 0
   File::Spec: 0
+  List::MoreUtils: 0
   List::Util: 0
   Moose: 0
   Moose::Role: 0
+  Moose::Util::TypeConstraints: 0
   Test::Builder: 0
   Test::Most: 0
   Try::Tiny: 0
@@ -31,4 +36,4 @@ requires:
   warnings: 0
 resources:
   repository: git://github.com/Ovid/test-class-moose.git
-version: 0.07
+version: 0.08

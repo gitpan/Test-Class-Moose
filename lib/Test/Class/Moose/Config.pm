@@ -1,17 +1,29 @@
 package Test::Class::Moose::Config;
 {
-  $Test::Class::Moose::Config::VERSION = '0.07';
+  $Test::Class::Moose::Config::VERSION = '0.08';
 }
 
 # ABSTRACT: Configuration information for Test::Class::Moose
 
 use 5.10.0;
 use Moose;
+use Moose::Util::TypeConstraints;
 use namespace::autoclean;
+
+subtype 'ArrayRefOfStrings', as 'ArrayRef[Str]';
+
+coerce 'ArrayRefOfStrings', from 'Str', via { [$_] };
 
 has 'show_timing' => (
     is  => 'ro',
     isa => 'Bool',
+    lazy => 1,
+    default => sub {
+        if ( $_[0]->use_environment and $ENV{HARNESS_IS_VERBOSE} ) {
+            return 1;
+        }
+        return;
+    },
 );
 
 has 'builder' => (
@@ -23,6 +35,18 @@ has 'builder' => (
 );
 
 has 'statistics' => (
+    is  => 'ro',
+    isa => 'Bool',
+    lazy => 1,
+    default => sub {
+        if ( $_[0]->use_environment and $ENV{HARNESS_IS_VERBOSE} ) {
+            return 1;
+        }
+        return;
+    },
+);
+
+has 'use_environment' => (
     is  => 'ro',
     isa => 'Bool',
 );
@@ -48,6 +72,20 @@ has 'exclude' => (
     isa => 'Regexp',
 );
 
+has 'include_tags' => (
+    is      => 'ro',
+    isa     => 'ArrayRefOfStrings',
+    coerce  => 1,
+    clearer => 'clear_include_tags',
+);
+
+has 'exclude_tags' => (
+    is      => 'ro',
+    isa     => 'ArrayRefOfStrings',
+    coerce  => 1,
+    clearer => 'clear_exclude_tags',
+);
+
 sub args {
     my $self = shift;
 
@@ -69,7 +107,7 @@ Test::Class::Moose::Config - Configuration information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -99,6 +137,10 @@ test class/test method to run.
 =head2 * C<statistics>
 
 Boolean. Will display number of classes, test methods and tests run.
+
+=head2 * C<use_environment>
+
+Boolean.  Sets show_timing and statistics to true if your test harness is running verbosely, false otherwise.
 
 =head2 C<builder>
 

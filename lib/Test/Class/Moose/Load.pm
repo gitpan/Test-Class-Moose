@@ -1,6 +1,6 @@
 package Test::Class::Moose::Load;
 {
-  $Test::Class::Moose::Load::VERSION = '0.07';
+  $Test::Class::Moose::Load::VERSION = '0.08';
 }
 
 # ABSTRACT: Load L<Test::Class::Moose> classes automatically.
@@ -37,7 +37,10 @@ sub _load {
     return unless defined $package;
 
     unshift @INC => $dir unless $Added_to_INC{ $dir }++;
-    eval "require $package"; ## no critic
+
+    # either "require" it or "use" it with no import list. Otherwise, this
+    # module will inherit from Test::Class::Moose and break everything.
+    eval "use $package ()"; ## no critic
     die $@ if $@;
 }
 
@@ -73,7 +76,7 @@ Test::Class::Moose::Load - Load L<Test::Class::Moose> classes automatically.
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 

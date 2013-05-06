@@ -1,16 +1,17 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.07';
+  $Test::Class::Moose::VERSION = '0.08';
 }
 
 # ABSTRACT: Test::Class + Moose
 
 use 5.10.0;
 use Moose;
-use Benchmark qw(timediff timestr);
 use Carp;
 use List::Util qw(shuffle);
+use List::MoreUtils qw(uniq);
 use namespace::autoclean;
+
 use Test::Builder;
 use Test::Most;
 use Try::Tiny;
@@ -18,6 +19,43 @@ use Test::Class::Moose::Config;
 use Test::Class::Moose::Report;
 use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Method;
+
+my $NO_CAN_HAZ_ATTRIBUTES;
+BEGIN {
+    eval "use Sub::Attribute";
+    unless ( $NO_CAN_HAZ_ATTRIBUTES = $@ ) {
+        eval <<'DECLARE_ATTRIBUTE';
+        sub Tags : ATTR_SUB {
+            my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
+
+            $data =~ s/^\s+//g;
+
+            my @tags = split /\s+/, $data;
+
+            if ( $symbol eq 'ANON' ) {
+                die "Cannot tag anonymous subs at file $file, line $line\n";
+            }
+
+            my $method = *{ $symbol }{ NAME };
+
+            {           # block for localising $@
+                local $@;
+
+                Test::Class::Moose::TagRegistry->add(
+                    $class,
+                    $method,
+                    \@tags,
+                );
+                if ( $@ ) {
+                    croak "Error in adding tags: $@";
+                }
+            }
+        }
+DECLARE_ATTRIBUTE
+        $NO_CAN_HAZ_ATTRIBUTES = $@;
+    }
+}
+use Test::Class::Moose::TagRegistry;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -51,8 +89,9 @@ sub import {
 
     eval <<"END";
 package $caller;
-use Test::Most;
 use Moose;
+use Test::Most;
+use Sub::Attribute;
 END
     croak($@) if $@;
     strict->import;
@@ -78,6 +117,15 @@ around 'BUILDARGS' => sub {
 sub BUILD {
     my $self = shift;
 
+    my $config = $self->test_configuration;
+    if ( ( $config->include_tags or $config->exclude_tags )
+        and $NO_CAN_HAZ_ATTRIBUTES )
+    {
+        carp("Attributes not available: $NO_CAN_HAZ_ATTRIBUTES");
+        $config->clear_include_tags;
+        $config->clear_exclude_tags;
+    }
+    
     # stash that name lest something change it later. Paranoid?
     $self->test_class( $self->meta->name );
 }
@@ -145,8 +193,7 @@ my $RUN_TEST_METHOD = sub {
                 $builder->plan( skip_all => $message );
                 return;
             }
-            my $start = Benchmark->new;
-            $report->_start_benchmark($start);
+            $report->_start_benchmark;
 
             my $old_test_count = $builder->current_test;
             try {
@@ -160,10 +207,9 @@ my $RUN_TEST_METHOD = sub {
             };
             $num_tests = $builder->current_test - $old_test_count;
 
-            my $end = Benchmark->new;
-            $report->_end_benchmark($end);
+            $report->_end_benchmark;
             if ( $self->test_configuration->show_timing ) {
-                my $time = timestr( timediff( $end, $start ) );
+                my $time = $report->time->duration;
                 $self->test_configuration->builder->diag(
                     $report->name . ": $time" );
             }
@@ -206,8 +252,7 @@ my $RUN_TEST_CLASS = sub {
             $builder->plan( skip_all => $message );
             return;
         }
-        my $start = Benchmark->new;
-        $report_class->_start_benchmark($start);
+        $report_class->_start_benchmark;
 
         $report->_inc_test_methods( scalar @test_methods );
 
@@ -247,10 +292,9 @@ my $RUN_TEST_CLASS = sub {
         ) or fail("test_shutdown() failed");
 
         # finalize reporting
-        my $end = Benchmark->new;
-        $report_class->_end_benchmark($end);
+        $report_class->_end_benchmark;
         if ( $self->test_configuration->show_timing ) {
-            my $time = timestr( timediff( $end, $start ) );
+            my $time = $report_class->time->duration;
             $self->test_configuration->builder->diag("$test_class: $time");
         }
     };
@@ -260,7 +304,7 @@ sub runtests {
     my $self = shift;
 
     my $report = $self->test_report;
-    $report->_start_benchmark( Benchmark->new );
+    $report->_start_benchmark;
     my @test_classes = $self->test_classes;
 
     my $builder = $self->test_configuration->builder;
@@ -279,7 +323,7 @@ Test methods:    @{[ $report->num_test_methods ]}
 Total tests run: @{[ $report->num_tests_run ]}
 END
     $builder->done_testing;
-    $report->_end_benchmark( Benchmark->new );
+    $report->_end_benchmark;
     return $self;
 }
 
@@ -295,6 +339,47 @@ sub test_classes {
     # eventually we'll want to control the test class order
     return sort @classes;
 }
+
+my $FILTER_BY_TAG = sub {
+    my ( $self, $methods ) = @_;
+
+    my @tags             = Test::Class::Moose::TagRegistry->tags;
+    my $class            = $self->test_class;
+    my @filtered_methods = @$methods;
+    if ( my $include = $self->test_configuration->include_tags ) {
+        my @new_method_list;
+        foreach my $method (@filtered_methods) {
+            my $subref = $class->can($method);
+            foreach my $tag (@$include) {
+                if (Test::Class::Moose::TagRegistry->method_has_tag(
+                        $class, $method, $tag
+                    )
+                  )
+                {
+                    push @new_method_list => $method;
+                }
+            }
+        }
+        @filtered_methods = @new_method_list;
+    }
+    if ( my $exclude = $self->test_configuration->exclude_tags ) {
+        my @new_method_list;
+        foreach my $method (@filtered_methods) {
+            foreach my $tag (@$exclude) {
+                unless (
+                    Test::Class::Moose::TagRegistry->method_has_tag(
+                        $class, $method, $tag
+                    )
+                  )
+                {
+                    push @new_method_list => $method;
+                }
+            }
+        }
+        @filtered_methods = @new_method_list;
+    }
+    return @filtered_methods;
+};
 
 sub test_methods {
     my $self = shift;
@@ -319,9 +404,13 @@ sub test_methods {
         @method_list = grep { !/$exclude/ } @method_list;
     }
 
-    return ( $self->test_configuration->randomize )
-      ? shuffle(@method_list)
-      : sort @method_list;
+    @method_list = $self->$FILTER_BY_TAG(\@method_list);
+
+    return uniq(
+        $self->test_configuration->randomize
+        ? shuffle(@method_list)
+        : sort @method_list
+    );
 }
 
 # empty stub methods guarantee that subclasses can always call these
@@ -342,7 +431,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -612,6 +701,35 @@ means an C<include> such as C<< /^customer.*/ >> will never run any tests.
 Regex. If present, only test methods whose names don't match C<exclude> will be
 included. B<However>, they must still start with C<test_>. See C<include>.
 
+=item * C<include_tags>
+
+Array ref of strings matching method tags (a single string is also ok). If
+present, only test methods whose tags match C<include_tags> or whose tags
+don't match C<exclude_tags> will be included. B<However>, they must still
+start with C<test_>.
+
+For example:
+
+ my $test_suite = Test::Class::Moose->new({
+     include_tags => [qw/api database/],
+ });
+
+The above constructor will only run tests tagged with C<api> or C<database>.
+
+=item * C<exclude_tags>
+
+The same as C<include_tags>, but will exclude the tests rather than include
+them. For example, if your network is down:
+
+ my $test_suite = Test::Class::Moose->new({
+     exclude_tags => [ 'network' ],
+ });
+
+ # or
+ my $test_suite = Test::Class::Moose->new({
+     exclude_tags => 'network',
+ });
+
 =back
 
 =head2 Skipping Classes and Methods
@@ -632,6 +750,38 @@ If you wish to skip an individual method, do so in the C<test_setup> method.
             $test->test_skip("Time travel not yet available");
         }
     }
+
+=head2 Tagging Methods
+
+Sometimes you want to be able to assign metadata to help you better manage
+your test suite. You can now do this with tags:
+
+    sub test_save_poll_data : Tags(api network) {
+        ...
+    }
+
+Tags are strictly optional and you can provide one or more tags for each test
+method with a space separated list of tags. You can use this to filter your
+tests suite, if desired. For example, if your network goes down and all tests
+which rely on a network are tagged with C<network>, you can skip those tests
+with this:
+
+    Test::Class::Moose->new( exclude_tags => 'network' )->runtests;
+
+Or maybe you want to run all C<api> and C<database> tests, but skip those
+marked C<deprecated>:
+
+    Test::Class::Moose->new(
+        include_tags => [qw/api database/],
+        exclude_tags => 'deprecated',
+    )->runtests;
+
+Tagging support relies on L<Sub::Attribute>. If this module is not available,
+C<include_tags> and C<exclude_tags> will be ignored, but a warning will be
+issued if those are seen.
+
+Tagging support is relatively new and feature requests (and patches!) are
+welcome.
 
 =head1 THINGS YOU CAN OVERRIDE
 

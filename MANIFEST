@@ -16,9 +16,11 @@ lib/Test/Class/Moose/Report/Time.pm
 lib/Test/Class/Moose/Role/AutoUse.pm
 lib/Test/Class/Moose/Role/Reporting.pm
 lib/Test/Class/Moose/Role/Timing.pm
-t/attributes.t
+lib/Test/Class/Moose/TagRegistry.pm
 t/autouse.t
 t/basic.t
+t/environment.t
+t/include_exclude.t
 t/lib/PersonTest.pm
 t/lib/TestsFor/Basic.pm
 t/lib/TestsFor/Basic/Subclass.pm
@@ -29,4 +31,8 @@ t/reporting.t
 t/skip.t
 t/skiplib/TestsFor/Basic.pm
 t/skiplib/TestsFor/SkipSomeMethods.pm
+t/taglib/PersonTest.pm
+t/taglib/TestsFor/Basic.pm
+t/taglib/TestsFor/Basic/Subclass.pm
+t/tags.t
 t/test_control_methods.t
