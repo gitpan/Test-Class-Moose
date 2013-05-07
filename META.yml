@@ -36,4 +36,4 @@ requires:
   warnings: 0
 resources:
   repository: git://github.com/Ovid/test-class-moose.git
-version: 0.08
+version: 0.09

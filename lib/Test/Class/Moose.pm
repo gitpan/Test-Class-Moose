@@ -1,6 +1,6 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.08';
+  $Test::Class::Moose::VERSION = '0.09';
 }
 
 # ABSTRACT: Test::Class + Moose
@@ -87,12 +87,16 @@ sub import {
     my ( $class, %arg_for ) = @_;
     my $caller = caller;
 
-    eval <<"END";
+    my $preamble = <<"END";
 package $caller;
 use Moose;
 use Test::Most;
-use Sub::Attribute;
 END
+
+    unless ($NO_CAN_HAZ_ATTRIBUTES) {
+        $preamble .= "use Sub::Attribute;\n";
+    }
+    eval $preamble;
     croak($@) if $@;
     strict->import;
     warnings->import;
@@ -431,7 +435,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 
