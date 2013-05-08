@@ -1,6 +1,6 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.09';
+  $Test::Class::Moose::VERSION = '0.10';
 }
 
 # ABSTRACT: Test::Class + Moose
@@ -19,8 +19,9 @@ use Test::Class::Moose::Config;
 use Test::Class::Moose::Report;
 use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Method;
+use Test::Class::Moose::TagRegistry;
 
-my $NO_CAN_HAZ_ATTRIBUTES;
+our $NO_CAN_HAZ_ATTRIBUTES;
 BEGIN {
     eval "use Sub::Attribute";
     unless ( $NO_CAN_HAZ_ATTRIBUTES = $@ ) {
@@ -55,7 +56,6 @@ DECLARE_ATTRIBUTE
         $NO_CAN_HAZ_ATTRIBUTES = $@;
     }
 }
-use Test::Class::Moose::TagRegistry;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -435,7 +435,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
