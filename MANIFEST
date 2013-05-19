@@ -5,7 +5,6 @@ META.yml
 Makefile.PL
 README
 dist.ini
-errors.err
 lib/Test/Class/Moose.pm
 lib/Test/Class/Moose/Config.pm
 lib/Test/Class/Moose/Load.pm
@@ -20,6 +19,7 @@ lib/Test/Class/Moose/TagRegistry.pm
 t/autouse.t
 t/basic.t
 t/environment.t
+t/include_classes.t
 t/include_exclude.t
 t/lib/PersonTest.pm
 t/lib/TestsFor/Basic.pm

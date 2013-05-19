@@ -1,6 +1,6 @@
 package Test::Class::Moose::Load;
 {
-  $Test::Class::Moose::Load::VERSION = '0.10';
+  $Test::Class::Moose::Load::VERSION = '0.11';
 }
 
 # ABSTRACT: Load L<Test::Class::Moose> classes automatically.
@@ -24,6 +24,7 @@ sub is_test_class {
 my %Added_to_INC;
 sub _load {
     my ( $class, $file, $dir ) = @_;
+
     $file =~ s{\.pm$}{};             # remove .pm extension
     $file =~ s{\\}{/}g;              # to make win32 happy
     $dir  =~ s{\\}{/}g;              # to make win32 happy
@@ -46,7 +47,6 @@ sub _load {
 
 sub import {
     my ( $class, @directories ) = @_;
-    my @test_classes;
 
     foreach my $dir ( @directories ) {
         $dir = File::Spec->catdir( split '/', $dir );
@@ -76,7 +76,7 @@ Test::Class::Moose::Load - Load L<Test::Class::Moose> classes automatically.
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 
