@@ -1,6 +1,6 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.11';
+  $Test::Class::Moose::VERSION = '0.12';
 }
 
 # ABSTRACT: Test::Class + Moose
@@ -67,6 +67,7 @@ has 'test_report' => (
     isa     => 'Test::Class::Moose::Report',
     default => sub { Test::Class::Moose::Report->new },
 );
+
 sub test_reporting {
     carp "test_reporting() deprecated as of version 0.07. Use test_report().";
     goto &test_report;
@@ -335,7 +336,9 @@ sub test_classes {
     my $self        = shift;
 
     if ( my $classes = $self->test_configuration->test_classes ) {
-        return @$classes;
+        if (@$classes) {    # ignore it if the array is empty
+            return @$classes;
+        }
     }
 
     my %metaclasses = Class::MOP::get_all_metaclasses();
@@ -440,16 +443,13 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
     package TestsFor::DateTime;
     use Test::Class::Moose;
     use DateTime;
-
-    # this usually goes in a base class
-    INIT { Test::Class::Moose->new->runtests }
 
     # methods that begin with test_ are test methods.
     sub test_constructor {
@@ -519,12 +519,15 @@ If you prefer, you can declare a plan in a test method:
         ...
     }
 
-You can only call C<plan()> once for a given test method report. Otherwise,
-you must call C<add_to_plan()>. For example, with a method modifier:
+You may callcall C<plan()> multiple times for a given test method. Each call
+        to C<plan()> will add that number of tests to the plan.  For example,
+        with a method modifier:
 
-    after 'test_something' => sub {
+    before 'test_something' => sub {
         my ( $test, $report ) = @_;
-        $report->add_to_plan($num_extra_tests);
+        $report->plan($num_extra_tests);
+
+        # more tests
     };
 
 Please note that if you call C<plan>, the plan will still show up at the end
@@ -635,7 +638,7 @@ The C<$report> object is a L<Test::Class::Moose::Report::Class> object.
 To override a test control method, just remember that this is OO:
 
  sub test_setup {
-     my $test = shift;
+     my  ( $test, $report ) = @_;
      $test->next::method; # optional to call parent test_setup
      # more setup code here
  }
@@ -709,6 +712,17 @@ C<test_classes> method, but this makes it trivial to do this:
 
     TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
 
+Alternatively:
+
+    Test::Class::Moose->new(
+        test_classes => \@ARGV, # ignored if empty
+    )->runtests;
+
+That lets you use the arisdottle to provide arguments to your test driver
+script:
+
+    prove -lv t/test_classes.t :: TestsFor::Our::Company::Invoice TestsFor::Something::Else
+
 =item * C<include>
 
 Regex. If present, only test methods whose name matches C<include> will be
@@ -776,7 +790,7 @@ If you wish to skip a class, set the reason in the C<test_startup> method.
 If you wish to skip an individual method, do so in the C<test_setup> method.
 
     sub test_setup {
-        my ( $self, $report ) = @_;
+        my ( $test, $report ) = @_;
 
         if ( 'test_time_travel' eq $report->name ) {
             $test->test_skip("Time travel not yet available");

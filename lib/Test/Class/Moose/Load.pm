@@ -1,6 +1,6 @@
 package Test::Class::Moose::Load;
 {
-  $Test::Class::Moose::Load::VERSION = '0.11';
+  $Test::Class::Moose::Load::VERSION = '0.12';
 }
 
 # ABSTRACT: Load L<Test::Class::Moose> classes automatically.
@@ -76,7 +76,7 @@ Test::Class::Moose::Load - Load L<Test::Class::Moose> classes automatically.
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Test::Class::Moose::Config;
 {
-  $Test::Class::Moose::Config::VERSION = '0.11';
+  $Test::Class::Moose::Config::VERSION = '0.12';
 }
 
 # ABSTRACT: Configuration information for Test::Class::Moose
@@ -10,9 +10,9 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 
-subtype 'ArrayRefOfStrings', as 'ArrayRef[Str]';
+subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
 
-coerce 'ArrayRefOfStrings', from 'Str', via { [$_] };
+coerce 'ArrayRefOfStrings', from 'Str', via { defined($_) ? [$_] : undef };
 
 has 'show_timing' => (
     is  => 'ro',
@@ -113,7 +113,7 @@ Test::Class::Moose::Config - Configuration information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 

@@ -1,11 +1,12 @@
 package Test::Class::Moose::Role::AutoUse;
 {
-  $Test::Class::Moose::Role::AutoUse::VERSION = '0.11';
+  $Test::Class::Moose::Role::AutoUse::VERSION = '0.12';
 }
 
 # ABSTRACT: Automatically load the classes you're testing
 
 use Moose::Role;
+use Carp 'confess';
 
 has 'class_name' => (
     is      => 'ro',
@@ -42,7 +43,7 @@ Test::Class::Moose::Role::AutoUse - Automatically load the classes you're testin
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 

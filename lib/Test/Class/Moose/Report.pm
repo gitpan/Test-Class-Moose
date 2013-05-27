@@ -1,6 +1,6 @@
 package Test::Class::Moose::Report;
 {
-  $Test::Class::Moose::Report::VERSION = '0.11';
+  $Test::Class::Moose::Report::VERSION = '0.12';
 }
 
 # ABSTRACT: Test information for Test::Class::Moose
@@ -72,7 +72,7 @@ Test::Class::Moose::Report - Test information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 

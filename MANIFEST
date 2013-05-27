@@ -5,6 +5,7 @@ META.yml
 Makefile.PL
 README
 dist.ini
+errors.err
 lib/Test/Class/Moose.pm
 lib/Test/Class/Moose/Config.pm
 lib/Test/Class/Moose/Load.pm
