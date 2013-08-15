@@ -17,8 +17,10 @@ lib/Test/Class/Moose/Role/AutoUse.pm
 lib/Test/Class/Moose/Role/Reporting.pm
 lib/Test/Class/Moose/Role/Timing.pm
 lib/Test/Class/Moose/TagRegistry.pm
+lib/Test/Class/Moose/Tutorial.pod
 t/autouse.t
 t/basic.t
+t/cpan-ticket-87801-related-to-exclude-tags.t
 t/environment.t
 t/include_classes.t
 t/include_exclude.t

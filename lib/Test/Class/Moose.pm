@@ -1,12 +1,12 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.12';
+  $Test::Class::Moose::VERSION = '0.20';
 }
 
 # ABSTRACT: Test::Class + Moose
 
 use 5.10.0;
-use Moose;
+use Moose 2.0000;
 use Carp;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
@@ -29,9 +29,11 @@ BEGIN {
         sub Tags : ATTR_SUB {
             my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
 
-            $data =~ s/^\s+//g;
-
-            my @tags = split /\s+/, $data;
+            my @tags;
+            if ($data) {
+                $data =~ s/^\s+//g;
+                @tags = split /\s+/, $data;
+            }
 
             if ( $symbol eq 'ANON' ) {
                 die "Cannot tag anonymous subs at file $file, line $line\n";
@@ -354,8 +356,6 @@ sub test_classes {
 
 my $FILTER_BY_TAG = sub {
     my ( $self, $methods ) = @_;
-
-    my @tags             = Test::Class::Moose::TagRegistry->tags;
     my $class            = $self->test_class;
     my @filtered_methods = @$methods;
     if ( my $include = $self->test_configuration->include_tags ) {
@@ -375,21 +375,21 @@ my $FILTER_BY_TAG = sub {
         @filtered_methods = @new_method_list;
     }
     if ( my $exclude = $self->test_configuration->exclude_tags ) {
-        my @new_method_list;
+        my @new_method_list = @filtered_methods;
         foreach my $method (@filtered_methods) {
             foreach my $tag (@$exclude) {
-                unless (
+                if (
                     Test::Class::Moose::TagRegistry->method_has_tag(
                         $class, $method, $tag
                     )
                   )
                 {
-                    push @new_method_list => $method;
+                  @new_method_list = grep { $_ ne $method } @new_method_list;
                 }
             }
-        }
+        };
         @filtered_methods = @new_method_list;
-    }
+    };
     return @filtered_methods;
 };
 
@@ -443,7 +443,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.12
+version 0.20
 
 =head1 SYNOPSIS
 
@@ -519,9 +519,9 @@ If you prefer, you can declare a plan in a test method:
         ...
     }
 
-You may callcall C<plan()> multiple times for a given test method. Each call
-        to C<plan()> will add that number of tests to the plan.  For example,
-        with a method modifier:
+You may call C<plan()> multiple times for a given test method. Each call to
+C<plan()> will add that number of tests to the plan.  For example, with a
+method modifier:
 
     before 'test_something' => sub {
         my ( $test, $report ) = @_;
@@ -783,7 +783,7 @@ them. For example, if your network is down:
 If you wish to skip a class, set the reason in the C<test_startup> method.
 
     sub test_startup {
-        my ( $self, $report ) = @_;
+        my ( $test, $report ) = @_;
         $test->test_skip("I don't want to run this class");
     }
 

@@ -22,11 +22,12 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "Benchmark" => 0,
     "Carp" => 0,
+    "Class::MOP" => 0,
     "File::Find" => 0,
     "File::Spec" => 0,
     "List::MoreUtils" => 0,
     "List::Util" => 0,
-    "Moose" => 0,
+    "Moose" => "2.0000",
     "Moose::Role" => 0,
     "Moose::Util::TypeConstraints" => 0,
     "Test::Builder" => 0,
@@ -41,7 +42,7 @@ my %WriteMakefileArgs = (
     "Data::Dumper" => 0,
     "Scalar::Util" => 0
   },
-  "VERSION" => "0.12",
+  "VERSION" => "0.20",
   "test" => {
     "TESTS" => "t/*.t"
   }
