@@ -6,10 +6,11 @@ build_requires:
   Carp::Always: 0
   Data::Dumper: 0
   Scalar::Util: 0
+  lib: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.131560'
+generated_by: 'Dist::Zilla version 4.300035, CPAN::Meta::Converter version 2.131560'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -37,4 +38,4 @@ requires:
   warnings: 0
 resources:
   repository: git://github.com/Ovid/test-class-moose.git
-version: 0.20
+version: 0.21

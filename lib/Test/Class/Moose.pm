@@ -1,6 +1,6 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.20';
+  $Test::Class::Moose::VERSION = '0.21';
 }
 
 # ABSTRACT: Test::Class + Moose
@@ -443,7 +443,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.20
+version 0.21
 
 =head1 SYNOPSIS
 
@@ -1001,7 +1001,13 @@ for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 TODO
 
-All TODO items have currently been implemented.
+=over 4
+
+=item * Callbacks for tags (for example, 'critical' tags could bailout)
+
+=item *  New test phases - start and end suite, not just start and end class/method
+
+=back
 
 =head1 BUGS
 

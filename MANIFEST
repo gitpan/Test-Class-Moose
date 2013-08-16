@@ -20,7 +20,6 @@ lib/Test/Class/Moose/TagRegistry.pm
 lib/Test/Class/Moose/Tutorial.pod
 t/autouse.t
 t/basic.t
-t/cpan-ticket-87801-related-to-exclude-tags.t
 t/environment.t
 t/include_classes.t
 t/include_exclude.t
@@ -37,5 +36,6 @@ t/skiplib/TestsFor/SkipSomeMethods.pm
 t/taglib/PersonTest.pm
 t/taglib/TestsFor/Basic.pm
 t/taglib/TestsFor/Basic/Subclass.pm
+t/taglib/TestsFor/MultipleExclude.pm
 t/tags.t
 t/test_control_methods.t

@@ -40,9 +40,10 @@ my %WriteMakefileArgs = (
   "TEST_REQUIRES" => {
     "Carp::Always" => 0,
     "Data::Dumper" => 0,
-    "Scalar::Util" => 0
+    "Scalar::Util" => 0,
+    "lib" => 0
   },
-  "VERSION" => "0.20",
+  "VERSION" => "0.21",
   "test" => {
     "TESTS" => "t/*.t"
   }
