@@ -17,7 +17,7 @@ lib/Test/Class/Moose/Role/AutoUse.pm
 lib/Test/Class/Moose/Role/Reporting.pm
 lib/Test/Class/Moose/Role/Timing.pm
 lib/Test/Class/Moose/TagRegistry.pm
-lib/Test/Class/Moose/Tutorial.pod
+lib/Test/Class/Moose/Tutorial.pm
 t/autouse.t
 t/basic.t
 t/environment.t

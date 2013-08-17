@@ -1,4 +1,15 @@
-# PODNAME: Test::Class::Moose tutorial
+package Test::Class::Moose::Tutorial
+
+# ABSTRACT: A starting guide for Test::Class::Moose
+
+# there is no code here, but we're moving this from .pod to .pm to try to work
+# around a strange bug where this is showing up instead of main docs on
+# metacpan and cpan
+
+1;
+{
+  $Test::Class::Moose::Tutorial::VERSION = '0.22';
+}
 
 __END__
 
@@ -6,11 +17,11 @@ __END__
 
 =head1 NAME
 
-Test::Class::Moose tutorial
+Test::Class::Moose::Tutorial - A starting guide for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.21
+version 0.22
 
 =head1 Getting Started
 

@@ -1,6 +1,6 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.21';
+  $Test::Class::Moose::VERSION = '0.22';
 }
 
 # ABSTRACT: Test::Class + Moose
@@ -152,7 +152,7 @@ my $TEST_CONTROL_METHODS = sub {
 
 my $RUN_TEST_CONTROL_METHOD = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CONTROL_METHOD';
-    my ( $self, $phase, $maybe_test_method ) = @_;
+    my ( $self, $phase, $report_object ) = @_;
 
     $TEST_CONTROL_METHODS->()->{$phase}
       or croak("Unknown test control method ($phase)");
@@ -161,7 +161,7 @@ my $RUN_TEST_CONTROL_METHOD = sub {
     my $builder = $self->test_configuration->builder;
     try {
         my $num_tests = $builder->current_test;
-        $self->$phase($maybe_test_method);
+        $self->$phase($report_object);
         if ( $builder->current_test ne $num_tests ) {
             croak("Tests may not be run in test control methods ($phase)");
         }
@@ -443,7 +443,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.21
+version 0.22
 
 =head1 SYNOPSIS
 

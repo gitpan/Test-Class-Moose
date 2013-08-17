@@ -38,4 +38,4 @@ requires:
   warnings: 0
 resources:
   repository: git://github.com/Ovid/test-class-moose.git
-version: 0.21
+version: 0.22
