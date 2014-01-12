@@ -1,6 +1,6 @@
 package Test::Class::Moose::TagRegistry;
 {
-  $Test::Class::Moose::TagRegistry::VERSION = '0.22';
+  $Test::Class::Moose::TagRegistry::VERSION = '0.40';
 }
 
 ## ABSTRACT: Global registry of tags by class and method.
@@ -54,6 +54,21 @@ sub tags {
     return sort( uniq(@tags) );
 }
 
+sub class_has_tag {
+    my ( $class, $test_class, $tag ) = @_;
+
+    croak("no class specified") if not defined $test_class;
+    croak("no tag specified")   if not defined $tag;
+
+    # XXX a naïve implementation, but it does the job for now.
+    my $test_class_meta = Class::MOP::Class->initialize($test_class);
+    foreach my $method ( $test_class_meta->get_all_method_names ) {
+        next unless $method =~ /test_/;
+        return 1 if $class->method_has_tag( $test_class, $method, $tag );
+    }
+    return;
+}
+
 sub method_has_tag {
     my ( $class, $test_class, $method, $tag ) = @_;
 
@@ -82,7 +97,20 @@ sub _superclass_tags {
     return {} if not exists $BY_METHOD{$method};
 
     my $test_class_meta = Class::MOP::Class->initialize($test_class);
-    my $method_meta     = $test_class_meta->find_next_method_by_name($method);
+    my $method_meta;
+    
+    $method_meta = $test_class_meta->find_next_method_by_name($method)
+    	if $test_class_meta->can('find_next_method_by_name');
+
+    if(!$method_meta){
+	#Might be a from a role or this class
+	my $mm = $test_class_meta->find_method_by_name($method);
+	my $orig = $mm->original_method;
+
+	if($orig && ($mm->package_name ne $orig->package_name)){
+		$method_meta = $orig;
+	}
+    }
 
     # no method, so no tags to inherit
     return {} if not $method_meta;
@@ -96,7 +124,7 @@ sub _superclass_tags {
     }
 
     # nothing defined at this level, recurse
-    return $class->_superclass_tags($test_class, $method);
+    return $class->_superclass_tags($super_test_class, $method);
 }
 
 sub _augment_tags {
@@ -132,13 +160,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Test::Class::Moose::TagRegistry - Global registry of tags by class and method.
 
 =head1 VERSION
 
-version 0.22
+version 0.40
 
 =head1 SYNOPSIS
 
@@ -196,7 +226,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

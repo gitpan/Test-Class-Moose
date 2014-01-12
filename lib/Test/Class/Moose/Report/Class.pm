@@ -1,6 +1,6 @@
 package Test::Class::Moose::Report::Class;
 {
-  $Test::Class::Moose::Report::Class::VERSION = '0.22';
+  $Test::Class::Moose::Report::Class::VERSION = '0.40';
 }
 
 # ABSTRACT: Reporting on test classes
@@ -31,6 +31,11 @@ has 'error' => (
     predicate => 'has_error',
 );
 
+sub current_method {
+    my $self = shift;
+    return $self->test_methods->[-1];
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -39,13 +44,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Test::Class::Moose::Report::Class - Reporting on test classes
 
 =head1 VERSION
 
-version 0.22
+version 0.40
 
 =head1 DESCRIPTION
 
@@ -80,7 +87,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

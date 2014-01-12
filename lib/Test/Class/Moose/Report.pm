@@ -1,6 +1,6 @@
 package Test::Class::Moose::Report;
 {
-  $Test::Class::Moose::Report::VERSION = '0.22';
+  $Test::Class::Moose::Report::VERSION = '0.40';
 }
 
 # ABSTRACT: Test information for Test::Class::Moose
@@ -60,11 +60,26 @@ sub current_class {
     return $self->test_classes->[-1];
 }
 
+sub current_method {
+    my $self = shift;
+    my $current_class = $self->current_class or return;
+    return $current_class->current_method;
+}
+
+sub plan {
+    my ( $self, $plan ) = @_;
+    my $current_method = $self->current_method
+        or croak("You tried to plan but we don't have a test method yet!");
+    $current_method->plan($plan);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
 
 =pod
+
+=encoding UTF-8
 
 =head1 NAME
 
@@ -72,7 +87,7 @@ Test::Class::Moose::Report - Test information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.22
+version 0.40
 
 =head1 SYNOPSIS
 
@@ -324,7 +339,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

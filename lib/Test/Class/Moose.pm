@@ -1,6 +1,6 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.22';
+  $Test::Class::Moose::VERSION = '0.40';
 }
 
 # ABSTRACT: Test::Class + Moose
@@ -65,15 +65,11 @@ has 'test_configuration' => (
 );
 
 has 'test_report' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => 'Test::Class::Moose::Report',
+    writer  => '__set_test_report',
     default => sub { Test::Class::Moose::Report->new },
 );
-
-sub test_reporting {
-    carp "test_reporting() deprecated as of version 0.07. Use test_report().";
-    goto &test_report;
-}
 
 has 'test_class' => (
     is  => 'rw',
@@ -177,18 +173,19 @@ my $RUN_TEST_CONTROL_METHOD = sub {
 
 my $RUN_TEST_METHOD = sub {
     local *__ANON__ = 'ANON_RUN_TEST_METHOD';
-    my ( $self, $test_instance, $test_method ) = @_;
+    my ( $self, $test_instance, $test_method, $report_class ) = @_;
 
     my $test_class = $test_instance->test_class;
     my $report  = Test::Class::Moose::Report::Method->new(
-        { name => $test_method } );
+        { name => $test_method, report_class => $report_class } );
+    $self->test_report->current_class->add_test_method($report);
 
     my $builder = $self->test_configuration->builder;
     $test_instance->test_skip_clear;
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
         $report
-    );
+    ) or fail "test_setup failed";
     my $num_tests;
 
     Test::Most::explain("$test_class->$test_method()");
@@ -225,8 +222,7 @@ my $RUN_TEST_METHOD = sub {
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
         $report
-    );
-    $self->test_report->current_class->add_test_method($report);
+    ) or fail "test_teardown failed";
     if ( !$report->is_skipped ) {
         $report->num_tests_run($num_tests);
         if ( !$report->has_plan ) {
@@ -239,19 +235,21 @@ my $RUN_TEST_METHOD = sub {
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
     my ( $self, $test_class ) = @_;
-    my $builder   = $self->test_configuration->builder;
-    my $report = $self->test_report;
+    my $builder = $self->test_configuration->builder;
+    my $report  = $self->test_report;
 
     return sub {
 
         # set up test class reporting
-        my $test_instance
-          = $test_class->new( $self->test_configuration->args );
         my $report_class = Test::Class::Moose::Report::Class->new(
             {   name => $test_class,
             }
         );
         $report->add_test_class($report_class);
+        my $test_instance
+          = $test_class->new( $self->test_configuration->args );
+        $test_instance->__set_test_report($report);
+
         my @test_methods = $test_instance->test_methods;
         unless (@test_methods) {
             my $message = "Skipping '$test_class': no test methods found";
@@ -287,7 +285,8 @@ my $RUN_TEST_CLASS = sub {
         foreach my $test_method (@test_methods) {
             my $report_method = $self->$RUN_TEST_METHOD(
                 $test_instance,
-                $test_method
+                $test_method,
+                $report_class,
             );
             $report->_inc_tests( $report_method->num_tests_run );
         }
@@ -307,8 +306,28 @@ my $RUN_TEST_CLASS = sub {
     };
 };
 
+# XXX This is an experimental hack that allows prove -l t/path/to/test/class.pm to
+# work. I should figure out a better strategy
+my $runtests_called = sub {
+    state $was_called;
+    if (@_) {
+        $was_called = shift;
+    }
+    return $was_called;
+};
+
+END {
+    if (    not $runtests_called->()
+        and not $ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} )
+    {
+        return unless $ENV{HARNESS_ACTIVE};
+        __PACKAGE__->new->runtests;
+    }
+}
+
 sub runtests {
     my $self = shift;
+    $runtests_called->(1);
 
     my $report = $self->test_report;
     $report->_start_benchmark;
@@ -437,13 +456,15 @@ __PACKAGE__->meta->make_immutable;
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.22
+version 0.40
 
 =head1 SYNOPSIS
 
@@ -453,8 +474,8 @@ version 0.22
 
     # methods that begin with test_ are test methods.
     sub test_constructor {
-        my ( $test, $report ) = @_;
-        $report->plan(3);    # strictly optional
+        my $test = shift;
+        $test->test_report->plan(3);    # strictly optional
 
         can_ok 'DateTime', 'new';
         my %args = (
@@ -514,8 +535,8 @@ Each test method relies on an implicit C<done_testing> call.
 If you prefer, you can declare a plan in a test method:
 
     sub test_something {
-        my ( $test, $report ) = @_;
-        $report->plan($num_tests);
+        my $test = shift;
+        $test->test_report->plan($num_tests);
         ...
     }
 
@@ -524,8 +545,8 @@ C<plan()> will add that number of tests to the plan.  For example, with a
 method modifier:
 
     before 'test_something' => sub {
-        my ( $test, $report ) = @_;
-        $report->plan($num_extra_tests);
+        my $test = shift;
+        $test->test_report->plan($num_extra_tests);
 
         # more tests
     };
@@ -585,60 +606,70 @@ These are:
 =item * C<test_startup>
 
  sub test_startup {
-    my ( $test, $report ) = @_;
+    my $test = shift;
     $test->next::method;
     # more startup
  }
 
 Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
-C<< $test->test_class >>, or the C<name> method on the C<$report> object.
+C<< $test->test_class >>, or you can do this:
 
-The C<$report> object is a L<Test::Class::Moose::Report::Class> object.
+    sub test_startup {
+        my $test                 = shift;
+        my $report               = $test->test_report;
+        my $class                = $report->current_class->name;
+        my $upcoming_test_method = $report->current_method->name;
+        ...
+    }
+
+The C<< $test->test_report >> object is a L<Test::Class::Moose::Report::Class>
+object.
 
 =item * C<test_setup>
 
  sub test_setup {
-    my ( $test, $report ) = @_;
+    my $test = shift;
     $test->next::method;
     # more setup
  }
 
 Runs at the start of each test method. If you must know the name of the test
-you're about to run, you can call C<< $report->name >>.
+you're about to run, you can do this:
 
-The C<$report> object is a L<Test::Class::Moose::Report::Method> object.
+ sub test_setup {
+    my $test = shift;
+    $test->next::method;
+    my $test_method = $test->test_report->current_method->name;
+    # do something with it
+ }
 
 =item * C<test_teardown>
 
  sub test_teardown {
-    my ( $test, $report ) = @_;
+    my $test = shift;
     # more teardown
     $test->next::method;
  }
 
 Runs at the end of each test method. 
 
-The C<$report> object is a L<Test::Class::Moose::Report::Method> object.
-
 =item * C<test_shutdown>
 
  sub test_shutdown {
-     my ( $test, $report ) = @_;
+     my $test = shift;
      # more teardown
      $test->next::method;
  }
 
 Runs at the end of each test class. 
 
-The C<$report> object is a L<Test::Class::Moose::Report::Class> object.
-
 =back
 
 To override a test control method, just remember that this is OO:
 
  sub test_setup {
-     my  ( $test, $report ) = @_;
+     my $test = shift;
      $test->next::method; # optional to call parent test_setup
      # more setup code here
  }
@@ -681,11 +712,18 @@ you'll need to access the C<test_configuration> attribute:
 =item * C<show_timing>
 
 Boolean. Will display verbose information on the amount of time it takes each
-test class/test method to run.
+test class/test method to run. Defaults to false, but see C<use_environment>.
 
 =item * C<statistics>
 
-Boolean. Will display number of classes, test methods and tests run.
+Boolean. Will display number of classes, test methods and tests run. Defaults
+to false, but see C<use_environment>.
+
+=item * C<use_environment>
+
+If this is true, then the default value for show_timing and statistics will be
+true if the C<HARNESS_IS_VERBOSE> environment variable is true. This is set
+when running C<prove -v ...>, for example.
 
 =item * C<randomize>
 
@@ -783,16 +821,17 @@ them. For example, if your network is down:
 If you wish to skip a class, set the reason in the C<test_startup> method.
 
     sub test_startup {
-        my ( $test, $report ) = @_;
+        my $test = shift;
         $test->test_skip("I don't want to run this class");
     }
 
 If you wish to skip an individual method, do so in the C<test_setup> method.
 
     sub test_setup {
-        my ( $test, $report ) = @_;
-
-        if ( 'test_time_travel' eq $report->name ) {
+        my $test = shift;
+        my $test_method = $test->test_report->current_method;
+    
+        if ( 'test_time_travel' eq $test_method->name ) {
             $test->test_skip("Time travel not yet available");
         }
     }
@@ -800,7 +839,8 @@ If you wish to skip an individual method, do so in the C<test_setup> method.
 =head2 Tagging Methods
 
 Sometimes you want to be able to assign metadata to help you better manage
-your test suite. You can now do this with tags:
+your test suite. You can now do this with tags if you have L<Sub::Attribute>
+installed:
 
     sub test_save_poll_data : Tags(api network) {
         ...
@@ -822,12 +862,28 @@ marked C<deprecated>:
         exclude_tags => 'deprecated',
     )->runtests;
 
+You can also inspect tags withing your test classes:
+
+    sub test_setup {
+        my $test          = shift;
+        my $method_to_run = $test->test_report->current_method;
+        if ( $method_to_run->has_tag('db') ) {
+            $test->load_database_fixtures;
+        }
+    }
+
 Tagging support relies on L<Sub::Attribute>. If this module is not available,
 C<include_tags> and C<exclude_tags> will be ignored, but a warning will be
 issued if those are seen.
 
-Tagging support is relatively new and feature requests (and patches!) are
-welcome.
+=head1 PARALLEL TESTING
+
+If you want to run the tests in parallel, see the experimental
+C<Test::Class::Moose::Role::Parallel> role. Read the documentation carefully
+as it can take a while to understand. You only need to use the role and
+(optionally) provide a C<schedule()> method. Any tests tagged with
+C<noparallel> will be run sequentially after the parallel tests (unless you
+provide your own schedule, in which case you can do anything you want).
 
 =head1 THINGS YOU CAN OVERRIDE
 
@@ -850,6 +906,23 @@ Returns the L<Test::Class::Moose::Config> object.
 Returns the L<Test::Class::Moose::Report> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 C<statistics> boolean option.
+
+You can also call it in test classes (most useful in the C<test_setup()> method):
+
+    sub test_setup {
+        my $test = shift;
+        $self->next::method;
+        my $report= $test->test_report;
+        my $class = $test->current_class;
+        my $method = $test->current_method; # the test method we're about to run
+        if ( $method->name =~ /customer/ ) {
+            $test->load_customer_fixture;
+        }
+        # or better still
+        if ( $method->has_tag('customer') ) {
+            $test->load_customer_fixture;
+        }
+    }
 
 =head2 C<test_class>
 
@@ -999,6 +1072,54 @@ Or even shorter:
 If you would like L<Test::Class::Moose> to take care of loading your classes
 for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
+=head1 DEPRECATIONS
+
+=over 4
+
+=item * C<test_reporting>
+
+As of version .40, the long deprecated method C<test_reporting> has now been
+removed.
+
+=item * C<$report> argument to methods deprecated
+
+Prior to version .40, you used to have a second argument to all test methods
+and test control methods:
+
+    sub test_something {
+        my ( $test, $report ) = @_;
+        ...
+    }
+
+This was annoying. It was doubly annoying in test control methods in case you
+forgot it:
+
+    sub test_setup {
+        my ( $test, $report ) = @_;
+        $test->next::method; # oops, needed $report
+        ...
+    }
+
+That second argument is still passed, but it's deprecated. It's now
+recommended that you call the C<< $test->test_report >> method to get that.
+Instead of this:
+
+    sub test_froblinator {
+        my ( $test, $report ) = @_;
+        $report->plan(7);
+        ...
+    }
+
+You write this:
+
+    sub test_froblinator {
+        my $test = shift;
+        $test->test_report->plan(7);
+        ...
+    }
+
+=back
+
 =head1 TODO
 
 =over 4
@@ -1085,7 +1206,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

@@ -1,6 +1,6 @@
 package Test::Class::Moose::Config;
 {
-  $Test::Class::Moose::Config::VERSION = '0.22';
+  $Test::Class::Moose::Config::VERSION = '0.40';
 }
 
 # ABSTRACT: Configuration information for Test::Class::Moose
@@ -92,6 +92,18 @@ has 'test_classes' => (
     coerce => 1,
 );
 
+has 'jobs' => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => 1,
+);
+
+has '_current_schedule' => (
+    is        => 'rw',
+    isa       => 'HashRef',
+    predicate => '_has_schedule',
+);
+
 sub args {
     my $self = shift;
 
@@ -107,13 +119,15 @@ __PACKAGE__->meta->make_immutable;
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Test::Class::Moose::Config - Configuration information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.22
+version 0.40
 
 =head1 SYNOPSIS
 
@@ -196,6 +210,13 @@ own if it conforms to the interface.
 
 Boolean. Will run tests in a random order.
 
+=head2 C<jobs>
+
+B<EXPERIMENTAL>: Returns the number of jobs running for the test suite.
+Default is 1.
+
+Only used by C<Test::Class::Moose::Role::Parallel>.
+
 =head1 METHODS
 
 =head2 C<args>
@@ -249,7 +270,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

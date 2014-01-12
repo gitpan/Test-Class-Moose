@@ -1,5 +1,18 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.40
+        - Parallel tests now automatically ignore test methods tagged with
+          'noparallel'.
+        - Fix bug where sequential tests fail with parallel testing.
+        - Remove long-deprecated test_reporting() method.
+        - The second argument to test methods ($report) is now deprecated.
+          Call $test->test_report instead.
+        - You can now call has_tag() on a method report object.
+
+0.30 [unrelease]
+        - Experimental support for parallel testing. See
+          Test::Class::Moose::Role::Parallel.
+
 0.22 2013-08-17
         - Renamed tutorial from .pod to .pm to stop both cpan and metacpan
           from replacing main documentation with the tutorial.

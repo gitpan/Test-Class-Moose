@@ -1,6 +1,6 @@
 package Test::Class::Moose::Role::AutoUse;
 {
-  $Test::Class::Moose::Role::AutoUse::VERSION = '0.22';
+  $Test::Class::Moose::Role::AutoUse::VERSION = '0.40';
 }
 
 # ABSTRACT: Automatically load the classes you're testing
@@ -37,13 +37,15 @@ sub get_class_name_to_use {
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Test::Class::Moose::Role::AutoUse - Automatically load the classes you're testing
 
 =head1 VERSION
 
-version 0.22
+version 0.40
 
 =head1 SYNOPSIS
 
@@ -205,7 +207,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

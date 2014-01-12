@@ -6,6 +6,9 @@ Makefile.PL
 README
 dist.ini
 errors.err
+lib/TAP/Stream.pm
+lib/TAP/Stream/Role/ToString.pm
+lib/TAP/Stream/Text.pm
 lib/Test/Class/Moose.pm
 lib/Test/Class/Moose/Config.pm
 lib/Test/Class/Moose/Load.pm
@@ -13,7 +16,9 @@ lib/Test/Class/Moose/Report.pm
 lib/Test/Class/Moose/Report/Class.pm
 lib/Test/Class/Moose/Report/Method.pm
 lib/Test/Class/Moose/Report/Time.pm
+lib/Test/Class/Moose/Role.pm
 lib/Test/Class/Moose/Role/AutoUse.pm
+lib/Test/Class/Moose/Role/Parallel.pm
 lib/Test/Class/Moose/Role/Reporting.pm
 lib/Test/Class/Moose/Role/Timing.pm
 lib/Test/Class/Moose/TagRegistry.pm
@@ -26,6 +31,11 @@ t/include_exclude.t
 t/lib/PersonTest.pm
 t/lib/TestsFor/Basic.pm
 t/lib/TestsFor/Basic/Subclass.pm
+t/parallel.t
+t/parallellib/MyParallelTests.pm
+t/parallellib/TestsFor/Alpha.pm
+t/parallellib/TestsFor/Alpha/Subclass.pm
+t/parallellib/TestsFor/Beta.pm
 t/planlib/TestsFor/Person.pm
 t/planlib/TestsFor/Person/Employee.pm
 t/plans.t
@@ -35,7 +45,10 @@ t/skiplib/TestsFor/Basic.pm
 t/skiplib/TestsFor/SkipSomeMethods.pm
 t/taglib/PersonTest.pm
 t/taglib/TestsFor/Basic.pm
+t/taglib/TestsFor/Basic/Role.pm
 t/taglib/TestsFor/Basic/Subclass.pm
+t/taglib/TestsFor/Basic/WithRole.pm
 t/taglib/TestsFor/MultipleExclude.pm
 t/tags.t
+t/tap-stream.t
 t/test_control_methods.t
