@@ -1,6 +1,6 @@
 package Test::Class::Moose::Role;
 {
-  $Test::Class::Moose::Role::VERSION = '0.40';
+  $Test::Class::Moose::Role::VERSION = '0.41';
 }
 
 #ABSTRACT : Test::Class::Moose for roles
@@ -90,7 +90,7 @@ Test::Class::Moose::Role
 
 =head1 VERSION
 
-version 0.40
+version 0.41
 
 =head1 AUTHOR
 

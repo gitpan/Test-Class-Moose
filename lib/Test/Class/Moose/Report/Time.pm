@@ -1,6 +1,6 @@
 package Test::Class::Moose::Report::Time;
 {
-  $Test::Class::Moose::Report::Time::VERSION = '0.40';
+  $Test::Class::Moose::Report::Time::VERSION = '0.41';
 }
 
 # ABSTRACT: Reporting object for timing
@@ -56,7 +56,7 @@ Test::Class::Moose::Report::Time - Reporting object for timing
 
 =head1 VERSION
 
-version 0.40
+version 0.41
 
 =head1 DESCRIPTION
 

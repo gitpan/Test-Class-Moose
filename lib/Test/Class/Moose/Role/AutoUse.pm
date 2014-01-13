@@ -1,6 +1,6 @@
 package Test::Class::Moose::Role::AutoUse;
 {
-  $Test::Class::Moose::Role::AutoUse::VERSION = '0.40';
+  $Test::Class::Moose::Role::AutoUse::VERSION = '0.41';
 }
 
 # ABSTRACT: Automatically load the classes you're testing
@@ -45,7 +45,7 @@ Test::Class::Moose::Role::AutoUse - Automatically load the classes you're testin
 
 =head1 VERSION
 
-version 0.40
+version 0.41
 
 =head1 SYNOPSIS
 

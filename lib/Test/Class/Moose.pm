@@ -1,6 +1,6 @@
 package Test::Class::Moose;
 {
-  $Test::Class::Moose::VERSION = '0.40';
+  $Test::Class::Moose::VERSION = '0.41';
 }
 
 # ABSTRACT: Test::Class + Moose
@@ -317,10 +317,14 @@ my $runtests_called = sub {
 };
 
 END {
-    if (    not $runtests_called->()
-        and not $ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} )
+
+    # This is getting even dodgier :/
+    if (!$runtests_called->()    # run tests if ... haven't run the tests
+        && !$ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS}  # ... not asked to skip them
+        && $ENV{HARNESS_ACTIVE}                   # ... the harness is active
+        && !Test::Builder->new->{Skip_All}        # ... not used used skip_all
+      )
     {
-        return unless $ENV{HARNESS_ACTIVE};
         __PACKAGE__->new->runtests;
     }
 }
@@ -464,7 +468,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.40
+version 0.41
 
 =head1 SYNOPSIS
 

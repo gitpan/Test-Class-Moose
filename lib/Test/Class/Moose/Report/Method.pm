@@ -1,6 +1,6 @@
 package Test::Class::Moose::Report::Method;
 {
-  $Test::Class::Moose::Report::Method::VERSION = '0.40';
+  $Test::Class::Moose::Report::Method::VERSION = '0.41';
 }
 
 # ABSTRACT: Reporting on test methods
@@ -73,7 +73,7 @@ Test::Class::Moose::Report::Method - Reporting on test methods
 
 =head1 VERSION
 
-version 0.40
+version 0.41
 
 =head1 DESCRIPTION
 

@@ -1,6 +1,6 @@
 package TAP::Stream::Role::ToString;
 {
-  $TAP::Stream::Role::ToString::VERSION = '0.40';
+  $TAP::Stream::Role::ToString::VERSION = '0.41';
 }
 
 # ABSTRACT: Experimental role for TAP stream builder
@@ -30,7 +30,7 @@ TAP::Stream::Role::ToString - Experimental role for TAP stream builder
 
 =head1 VERSION
 
-version 0.40
+version 0.41
 
 =head1 DESCRIPTION
 
