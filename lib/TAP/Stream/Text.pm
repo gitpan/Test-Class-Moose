@@ -1,6 +1,6 @@
 package TAP::Stream::Text;
 {
-  $TAP::Stream::Text::VERSION = '0.41';
+  $TAP::Stream::Text::VERSION = '0.42';
 }
 
 # ABSTRACT: Experimental TAP stream builder for parallel tests
@@ -33,7 +33,7 @@ TAP::Stream::Text - Experimental TAP stream builder for parallel tests
 
 =head1 VERSION
 
-version 0.41
+version 0.42
 
 =head1 DESCRIPTION
 

@@ -39,5 +39,7 @@ requires:
   strict: 0
   warnings: 0
 resources:
+  bugtracker: https://github.com/Ovid/test-class-moose/issues
+  homepage: https://github.com/Ovid/test-class-moose
   repository: git://github.com/Ovid/test-class-moose.git
-version: 0.41
+version: 0.42

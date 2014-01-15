@@ -1,6 +1,6 @@
 package Test::Class::Moose::Role::Parallel;
 {
-  $Test::Class::Moose::Role::Parallel::VERSION = '0.41';
+  $Test::Class::Moose::Role::Parallel::VERSION = '0.42';
 }
 
 # ABSTRACT: run tests in parallel (highly experimental)
@@ -148,7 +148,7 @@ Test::Class::Moose::Role::Parallel - run tests in parallel (highly experimental)
 
 =head1 VERSION
 
-version 0.41
+version 0.42
 
 =head1 SYNOPSIS
 

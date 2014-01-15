@@ -8,7 +8,7 @@ package Test::Class::Moose::Tutorial
 
 1;
 {
-  $Test::Class::Moose::Tutorial::VERSION = '0.41';
+  $Test::Class::Moose::Tutorial::VERSION = '0.42';
 }
 
 __END__
@@ -23,7 +23,7 @@ Test::Class::Moose::Tutorial - A starting guide for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.41
+version 0.42
 
 =head1 Getting Started
 

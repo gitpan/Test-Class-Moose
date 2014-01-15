@@ -1,6 +1,6 @@
 package Test::Class::Moose::TagRegistry;
 {
-  $Test::Class::Moose::TagRegistry::VERSION = '0.41';
+  $Test::Class::Moose::TagRegistry::VERSION = '0.42';
 }
 
 ## ABSTRACT: Global registry of tags by class and method.
@@ -168,7 +168,7 @@ Test::Class::Moose::TagRegistry - Global registry of tags by class and method.
 
 =head1 VERSION
 
-version 0.41
+version 0.42
 
 =head1 SYNOPSIS
 

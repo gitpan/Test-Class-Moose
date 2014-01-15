@@ -1,0 +1,71 @@
+{
+   "abstract" : "Test::Class + Moose",
+   "author" : [
+      "Curtis \"Ovid\" Poe <ovid@cpan.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.132830",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Test-Class-Moose",
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.30"
+         }
+      },
+      "runtime" : {
+         "recommends" : {
+            "Parallel::ForkManager" : "v0.7.6",
+            "Sub::Attribute" : "0.05"
+         },
+         "requires" : {
+            "Benchmark" : "0",
+            "Carp" : "0",
+            "Class::MOP" : "0",
+            "File::Find" : "0",
+            "File::Spec" : "0",
+            "List::MoreUtils" : "0",
+            "List::Util" : "0",
+            "Moose" : "2.0000",
+            "Moose::Role" : "0",
+            "Moose::Util::TypeConstraints" : "0",
+            "Parallel::ForkManager" : "0",
+            "Test::Builder" : "0",
+            "Test::Most" : "0",
+            "Try::Tiny" : "0",
+            "namespace::autoclean" : "0",
+            "perl" : "5.010",
+            "strict" : "0",
+            "warnings" : "0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Carp::Always" : "0",
+            "Data::Dumper" : "0",
+            "Scalar::Util" : "0",
+            "lib" : "0"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/Ovid/test-class-moose/issues"
+      },
+      "homepage" : "https://github.com/Ovid/test-class-moose",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/Ovid/test-class-moose.git",
+         "web" : "https://github.com/Ovid/test-class-moose"
+      }
+   },
+   "version" : "0.42"
+}
+
