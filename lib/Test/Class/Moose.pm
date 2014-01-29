@@ -1,8 +1,5 @@
 package Test::Class::Moose;
-{
-  $Test::Class::Moose::VERSION = '0.42';
-}
-
+$Test::Class::Moose::VERSION = '0.43';
 # ABSTRACT: Test::Class + Moose
 
 use 5.10.0;
@@ -179,8 +176,9 @@ my $RUN_TEST_METHOD = sub {
     my $report  = Test::Class::Moose::Report::Method->new(
         { name => $test_method, report_class => $report_class } );
     $self->test_report->current_class->add_test_method($report);
+    my $config = $self->test_configuration;
 
-    my $builder = $self->test_configuration->builder;
+    my $builder = $config->builder;
     $test_instance->test_skip_clear;
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
@@ -212,13 +210,28 @@ my $RUN_TEST_METHOD = sub {
             $num_tests = $builder->current_test - $old_test_count;
 
             $report->_end_benchmark;
-            if ( $self->test_configuration->show_timing ) {
+            if ( $config->show_timing ) {
                 my $time = $report->time->duration;
-                $self->test_configuration->builder->diag(
+                $config->builder->diag(
                     $report->name . ": $time" );
             }
         },
     );
+
+    # The set_color() method from Test::Formatter::Color is just ugly.
+    if ( $config->running_in_parallel ) {
+
+        # we're running under parallel testing, so rather than having
+        # the code look like it's stalled, we'll output a dot for
+        # every test method.
+        my $color = ( $builder->details )[-1]{ok} ? 'green' : 'red';
+        $config->_color->set_color(
+            sub { print STDERR shift, '.' },
+            $color,
+        );
+        $config->_color->set_color( sub { print STDERR shift }, 'reset' );
+    }
+
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
         $report
@@ -235,7 +248,9 @@ my $RUN_TEST_METHOD = sub {
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
     my ( $self, $test_class ) = @_;
-    my $builder = $self->test_configuration->builder;
+
+    my $config  = $self->test_configuration;
+    my $builder = $config->builder;
     my $report  = $self->test_report;
 
     return sub {
@@ -247,7 +262,7 @@ my $RUN_TEST_CLASS = sub {
         );
         $report->add_test_class($report_class);
         my $test_instance
-          = $test_class->new( $self->test_configuration->args );
+          = $test_class->new( $config->args );
         $test_instance->__set_test_report($report);
 
         my @test_methods = $test_instance->test_methods;
@@ -299,9 +314,9 @@ my $RUN_TEST_CLASS = sub {
 
         # finalize reporting
         $report_class->_end_benchmark;
-        if ( $self->test_configuration->show_timing ) {
+        if ( $config->show_timing ) {
             my $time = $report_class->time->duration;
-            $self->test_configuration->builder->diag("$test_class: $time");
+            $config->builder->diag("$test_class: $time");
         }
     };
 };
@@ -444,7 +459,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-version 0.42
+version 0.43
 
 =head1 SYNOPSIS
 

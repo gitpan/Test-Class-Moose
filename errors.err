@@ -1,0 +1,2 @@
+lib/Test/Class/Moose.pm:83:Unused variable my $class
+lib/Test/Class/Moose.pm:361:Unused variable my $subref

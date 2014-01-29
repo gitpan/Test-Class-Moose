@@ -1,8 +1,5 @@
 package TAP::Stream;
-{
-  $TAP::Stream::VERSION = '0.42';
-}
-
+$TAP::Stream::VERSION = '0.43';
 # ABSTRACT: Experimental TAP stream builder for parallel tests
 
 use Moose;
@@ -107,7 +104,7 @@ TAP::Stream - Experimental TAP stream builder for parallel tests
 
 =head1 VERSION
 
-version 0.42
+version 0.43
 
 =head1 SYNOPSIS
 

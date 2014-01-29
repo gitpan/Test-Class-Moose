@@ -1,8 +1,5 @@
 package Test::Class::Moose::Role::Parallel;
-{
-  $Test::Class::Moose::Role::Parallel::VERSION = '0.42';
-}
-
+$Test::Class::Moose::Role::Parallel::VERSION = '0.43';
 # ABSTRACT: run tests in parallel (highly experimental)
 
 use Moose::Role;
@@ -70,7 +67,7 @@ around 'runtests' => sub {
         $fork->finish( 0, [ $job_num, $output ] );
     }
     $fork->wait_all_children;
-    if ($sequential) {
+    if ($sequential && keys %$sequential) {
         $config->_current_schedule($sequential);
         my $output = $self->$run_job($orig);
         $stream->add_to_stream( TAP::Stream::Text->new(
@@ -78,6 +75,10 @@ around 'runtests' => sub {
             name => 'Sequential tests run after parallel tests',
         ) );
     }
+
+    # this prevents overwriting the line of dots output from
+    # $RUN_TEST_CONTROL_METHOD
+    print STDERR "\n";
 
     # this is where we print the TAP results
     print $test_builder_output $stream->tap_to_string;
@@ -148,7 +149,7 @@ Test::Class::Moose::Role::Parallel - run tests in parallel (highly experimental)
 
 =head1 VERSION
 
-version 0.42
+version 0.43
 
 =head1 SYNOPSIS
 
