@@ -1,5 +1,5 @@
 package Test::Class::Moose::Tutorial
-$Test::Class::Moose::Tutorial::VERSION = '0.43';
+$Test::Class::Moose::Tutorial::VERSION = '0.50';
 # ABSTRACT: A starting guide for Test::Class::Moose
 
 # there is no code here, but we're moving this from .pod to .pm to try to work
@@ -20,7 +20,7 @@ Test::Class::Moose::Tutorial - A starting guide for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.43
+version 0.50
 
 =head1 Getting Started
 

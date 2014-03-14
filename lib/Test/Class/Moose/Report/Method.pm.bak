@@ -1,11 +1,11 @@
 package Test::Class::Moose::Report::Method;
-$Test::Class::Moose::Report::Method::VERSION = '0.50';
+
 # ABSTRACT: Reporting on test methods
 
 use Moose;
 use Carp;
 use namespace::autoclean;
-use Test::Class::Moose::AttributeRegistry;
+use Test::Class::Moose::TagRegistry;
 
 with qw(
   Test::Class::Moose::Role::Reporting
@@ -51,7 +51,7 @@ sub has_tag {
     croak("has_tag(\$tag) requires a tag name") unless defined $tag;
     my $report_class = $self->report_class->name;
     my $method       = $self->name;
-    return Test::Class::Moose::AttributeRegistry->method_has_tag( $report_class, $method, $tag );
+    return Test::Class::Moose::TagRegistry->method_has_tag( $report_class, $method, $tag );
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -59,18 +59,6 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
-
-=pod
-
-=encoding UTF-8
-
-=head1 NAME
-
-Test::Class::Moose::Report::Method - Reporting on test methods
-
-=head1 VERSION
-
-version 0.50
 
 =head1 DESCRIPTION
 
@@ -108,16 +96,3 @@ equal to the number of tests run.
     }
 
 Returns true if the current test method has the tag in question.
-
-=head1 AUTHOR
-
-Curtis "Ovid" Poe <ovid@cpan.org>
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2014 by Curtis "Ovid" Poe.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
-=cut

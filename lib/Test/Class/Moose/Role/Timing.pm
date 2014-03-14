@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role::Timing;
-$Test::Class::Moose::Role::Timing::VERSION = '0.43';
+$Test::Class::Moose::Role::Timing::VERSION = '0.50';
 # ABSTRACT: Report timing role
 
 use Moose::Role;
@@ -51,7 +51,7 @@ Test::Class::Moose::Role::Timing - Report timing role
 
 =head1 VERSION
 
-version 0.43
+version 0.50
 
 =head1 DESCRIPTION
 

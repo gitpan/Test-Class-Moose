@@ -1,19 +1,20 @@
 package Test::Class::Moose::Role;
-$Test::Class::Moose::Role::VERSION = '0.50';
+
 # ABSTRACT: Test::Class::Moose for roles
 
 use 5.10.0;
 use Carp;
 
-use Test::Class::Moose::AttributeRegistry;
+use Test::Class::Moose::TagRegistry;
 
 BEGIN {
     require Test::Class::Moose;
     eval "use Sub::Attribute";
-    unless ( Test::Class::Moose->__attributes_unavailable ) {
+    unless(Test::Class::Moose->__attributes_unavailable){
         eval Test::Class::Moose->__create_attributes;
     }
 }
+
 
 sub import {
     my ( $class, %arg_for ) = @_;
@@ -25,34 +26,20 @@ use Moose::Role;
 use Test::Most;
 END
 
-    unless ( Test::Class::Moose->__attributes_unavailable ) {
+    unless (Test::Class::Moose->__attributes_unavailable) {
         $preamble .= "use Sub::Attribute;\n";
     }
     eval $preamble;
     croak($@) if $@;
-    unless ( Test::Class::Moose->__attributes_unavailable ) {
+    unless (Test::Class::Moose->__attributes_unavailable) {
         no strict "refs";
-        *{"$caller\::Tags"}  = \&Tags;
-        *{"$caller\::Test"}  = \&Test;
-        *{"$caller\::Tests"} = \&Tests;
+        *{"$caller\::Tags"} = \&Tags;
     }
 }
 
 1;
 
 __END__
-
-=pod
-
-=encoding UTF-8
-
-=head1 NAME
-
-Test::Class::Moose::Role - Test::Class::Moose for roles
-
-=head1 VERSION
-
-version 0.50
 
 =head1 DESCRIPTION
 
@@ -98,16 +85,3 @@ And to consume it:
 Note that this cannot be consumed into classes and magically make them into
 test classes. You must still (at the present time) inherit from
 C<Test::Class::Moose> to create a test suite.
-
-=head1 AUTHOR
-
-Curtis "Ovid" Poe <ovid@cpan.org>
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2014 by Curtis "Ovid" Poe.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
-=cut

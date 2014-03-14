@@ -1,12 +1,12 @@
 package Test::Class::Moose::Role::Parallel;
-$Test::Class::Moose::Role::Parallel::VERSION = '0.50';
+
 # ABSTRACT: run tests in parallel (highly experimental)
 
 use Moose::Role;
 use Parallel::ForkManager;
 use Test::Builder;
 use TAP::Stream;
-use Test::Class::Moose::AttributeRegistry;
+use Test::Class::Moose::TagRegistry;
 use Carp;
 
 has 'color_output' => (
@@ -152,7 +152,7 @@ sub schedule {
     foreach my $test_class ( $self->test_classes ) {
         my $test_instance = $test_class->new( $config->args );
         METHOD: foreach my $method ( $test_instance->test_methods ) {
-            if ( Test::Class::Moose::AttributeRegistry->method_has_tag( $test_class, $method, 'noparallel' ) ) {
+            if ( Test::Class::Moose::TagRegistry->method_has_tag( $test_class, $method, 'noparallel' ) ) {
                 $sequential{$test_class}{$method} = 1;
                 next METHOD;
             }
@@ -170,18 +170,6 @@ sub schedule {
 1;
 
 __END__
-
-=pod
-
-=encoding UTF-8
-
-=head1 NAME
-
-Test::Class::Moose::Role::Parallel - run tests in parallel (highly experimental)
-
-=head1 VERSION
-
-version 0.50
 
 =head1 SYNOPSIS
 
@@ -362,11 +350,11 @@ Or it could be that some tests run in parallel with some tests, but not
 others. Again, your schedule needs to be written to take that into account.
 
 To manage this information better, if you can use tags, you'll find that
-C<Test::Class::Moose::AttributeRegistry> can help:
+C<Test::Class::Moose::TagRegistry> can help:
 
-    use aliased 'Test::Class::Moose::AttributeRegistry';
+    use aliased 'Test::Class::Moose::TagRegistry';
 
-    if ( AttributeRegistry->method_has_tag( $class, $method, $tag ) ) {
+    if ( TagRegistry->method_has_tag( $class, $method, $tag ) ) {
 
         # put the method in the appropriate job
     }
@@ -381,6 +369,7 @@ We use C<Parallel::ForkManager> to create our jobs.
 For each job, we grab the schedule for that job number and the C<test_classes>
 and C<test_methods> methods only return classes and methods in the current job
 schedule. Then we run only those tests, but capture the output like this:
+
 
     my $builder = Test::Builder->new;
 
@@ -414,16 +403,3 @@ indicate that it should be ignored).
 
 For our C<t/parallellib> test suite, we go from 11 seconds on a regular test
 run down to 2 seconds when running with 8 jobs.
-
-=head1 AUTHOR
-
-Curtis "Ovid" Poe <ovid@cpan.org>
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2014 by Curtis "Ovid" Poe.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
-=cut
