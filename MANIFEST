@@ -52,4 +52,3 @@ t/taglib/TestsFor/Basic/WithRole.pm
 t/taglib/TestsFor/MultipleExclude.pm
 t/tags.t
 t/test_control_methods.t
-weaver.ini

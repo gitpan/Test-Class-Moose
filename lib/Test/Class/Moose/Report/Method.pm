@@ -1,5 +1,5 @@
 package Test::Class::Moose::Report::Method;
-$Test::Class::Moose::Report::Method::VERSION = '0.52';
+$Test::Class::Moose::Report::Method::VERSION = '0.53';
 # ABSTRACT: Reporting on test methods
 
 use Moose;
@@ -61,5 +61,63 @@ __PACKAGE__->meta->make_immutable;
 __END__
 
 =pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Test::Class::Moose::Report::Method - Reporting on test methods
+
+=head1 VERSION
+
+version 0.53
+
+=head1 DESCRIPTION
+
+Should be considered experimental and B<read only>.
+
+=head1 IMPLEMENTS
+
+L<Test::Class::Moose::Role::Reporting>.
+
+=head1 ATTRIBUTES
+
+=head2 C<report_class>
+
+The C<Test::Class::Moose::Report::Class> for this method.
+
+=head2 C<num_tests_run>
+
+    my $tests_run = $method->num_tests_run;
+
+The number of tests run for this test method.
+
+=head2 C<tests_planned>
+
+    my $tests_planned = $method->tests_planned;
+
+The number of tests planned for this test method. If a plan has not been
+explicitly set with C<$report->test_plan>, then this number will always be
+equal to the number of tests run.
+
+=head1 C<has_tag>
+
+    my $method = $test->test_report->current_method;
+    if ( $method->has_tag('db') ) {
+        $test->load_database_fixtures;
+    }
+
+Returns true if the current test method has the tag in question.
+
+=head1 AUTHOR
+
+Curtis "Ovid" Poe <ovid@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
