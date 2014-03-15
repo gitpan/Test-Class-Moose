@@ -1,5 +1,5 @@
 package Test::Class::Moose::AttributeRegistry;
-$Test::Class::Moose::AttributeRegistry::VERSION = '0.51';
+$Test::Class::Moose::AttributeRegistry::VERSION = '0.52';
 ## ABSTRACT: Global registry of tags by class and method.
 
 use strict;
@@ -178,92 +178,5 @@ sub _augment_tags {
 __END__
 
 =pod
-
-=encoding UTF-8
-
-=head1 NAME
-
-Test::Class::Moose::AttributeRegistry - Global registry of tags by class and method.
-
-=head1 VERSION
-
-version 0.51
-
-=head1 SYNOPSIS
-
- use Test::Class::Moose::AttributeRegistry;
-
- my @tags = Test::Class::Moose::AttributeRegistry->tags;
- print Test::Class::Moose::AttributeRegistry->method_has_tag( 'TestsFor::FooBar', 'test_baz', 'network' );
-
-=head1 DESCRIPTION
-
-This class permits addition and querying of the tags and plans defined on
-methods via attributes. It's been gleefully stolen from
-L<Attribute::Method::Tags> and is for internal use only. Don't rely on this
-code.
-
-=head1 METHODS
-
-All the following are class methods, as the attribute registry is shared
-globally. Note that all parameters for any of the methods below are required.
-
-=over 4
-
-=item add_plan( $class, $method, plan )
-
-Add a numeric (or undef) plan to a method.
-
-=item get_plan( $class, $method )
-
-Returns the numeric (or undef) plan for a method if that was set via the
-C<Test> or C<Tests> attributes.
-
-=item has_test_attribute( $class, $method )
-
-Returns true if either C<Test> or C<Tests> was declared for a method. Used to
-identify something as a test method even if the method name doesn't begin with
-C<test_>.
-
-=item add_tags( $class, $method, $tags_ref )
-
-Adds the given list of tags (as an array-ref) for the specified class/method
-combination.  An exception will be raised if either the tags are
-non-alphanumeric or the method is one that has already had tags registered
-for it.
-
-=item tags
-
-Find all tags defined for all methods.  Returns a sorted list of tags.
-
-=item method_has_tag( $class, $method, $tag )
-
-Returns a boolean (0|1), indicating whether the given method in the given class
-has the specified tag.
-
-=back
-
-=head1 SEE ALSO
-
-=over 4
-
-=item L<Attribute::Method::Tags>
-
-Attribute-based interface for adding tags to methods. Your author "liberated"
-this code from L<Attribute::Method::Tags::Registry> (with a tip 'o the
-keyboard to Mark Morgan for his work on this).
-
-=back
-
-=head1 AUTHOR
-
-Curtis "Ovid" Poe <ovid@cpan.org>
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2014 by Curtis "Ovid" Poe.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
 
 =cut
