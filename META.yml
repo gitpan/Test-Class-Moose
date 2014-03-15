@@ -32,6 +32,7 @@ requires:
   Moose::Util::TypeConstraints: 0
   MooseX::ClassAttribute: 0
   Parallel::ForkManager: 0
+  Sub::Attribute: 0
   TAP::Formatter::Color: 0
   TAP::Stream: 0
   Test::Builder: 0
@@ -45,4 +46,4 @@ resources:
   bugtracker: https://github.com/Ovid/test-class-moose/issues
   homepage: https://github.com/Ovid/test-class-moose
   repository: https://github.com/Ovid/test-class-moose.git
-version: 0.50
+version: 0.51

@@ -37,6 +37,7 @@
             "Moose::Util::TypeConstraints" : "0",
             "MooseX::ClassAttribute" : "0",
             "Parallel::ForkManager" : "0",
+            "Sub::Attribute" : "0",
             "TAP::Formatter::Color" : "0",
             "TAP::Stream" : "0",
             "Test::Builder" : "0",
@@ -69,6 +70,6 @@
          "web" : "https://github.com/Ovid/test-class-moose"
       }
    },
-   "version" : "0.50"
+   "version" : "0.51"
 }
 

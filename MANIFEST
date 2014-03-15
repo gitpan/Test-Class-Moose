@@ -7,7 +7,6 @@ META.yml
 Makefile.PL
 README
 dist.ini
-errors.err
 lib/Test/Class/Moose.pm
 lib/Test/Class/Moose.pm.bak
 lib/Test/Class/Moose/AttributeRegistry.pm
