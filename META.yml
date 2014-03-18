@@ -1,5 +1,5 @@
 ---
-abstract: 'Test::Class + Moose'
+abstract: 'Serious testing for serious Perl'
 author:
   - "Curtis \"Ovid\" Poe <ovid@cpan.org>"
 build_requires:
@@ -44,6 +44,6 @@ requires:
   warnings: 0
 resources:
   bugtracker: https://github.com/Ovid/test-class-moose/issues
-  homepage: https://github.com/Ovid/test-class-moose
+  homepage: http://ovid.github.io/test-class-moose/
   repository: https://github.com/Ovid/test-class-moose.git
-version: 0.53
+version: 0.54

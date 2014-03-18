@@ -1,5 +1,5 @@
 package Test::Class::Moose::Config;
-$Test::Class::Moose::Config::VERSION = '0.53';
+$Test::Class::Moose::Config::VERSION = '0.54';
 # ABSTRACT: Configuration information for Test::Class::Moose
 
 use 5.10.0;
@@ -140,7 +140,7 @@ Test::Class::Moose::Config - Configuration information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.53
+version 0.54
 
 =head1 SYNOPSIS
 

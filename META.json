@@ -1,5 +1,5 @@
 {
-   "abstract" : "Test::Class + Moose",
+   "abstract" : "Serious testing for serious Perl",
    "author" : [
       "Curtis \"Ovid\" Poe <ovid@cpan.org>"
    ],
@@ -63,13 +63,13 @@
       "bugtracker" : {
          "web" : "https://github.com/Ovid/test-class-moose/issues"
       },
-      "homepage" : "https://github.com/Ovid/test-class-moose",
+      "homepage" : "http://ovid.github.io/test-class-moose/",
       "repository" : {
          "type" : "git",
          "url" : "https://github.com/Ovid/test-class-moose.git",
          "web" : "https://github.com/Ovid/test-class-moose"
       }
    },
-   "version" : "0.53"
+   "version" : "0.54"
 }
 
