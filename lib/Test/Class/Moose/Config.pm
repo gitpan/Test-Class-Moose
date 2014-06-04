@@ -1,5 +1,5 @@
 package Test::Class::Moose::Config;
-$Test::Class::Moose::Config::VERSION = '0.54';
+$Test::Class::Moose::Config::VERSION = '0.55'; # TRIAL
 # ABSTRACT: Configuration information for Test::Class::Moose
 
 use 5.10.0;
@@ -90,28 +90,6 @@ has 'test_classes' => (
     coerce => 1,
 );
 
-has 'jobs' => (
-    is      => 'ro',
-    isa     => 'Int',
-    default => 1,
-);
-
-has '_current_schedule' => (
-    is        => 'rw',
-    isa       => 'HashRef',
-    predicate => '_has_schedule',
-);
-
-has '_color' => (
-    is         => 'rw',
-    isa        => 'TAP::Formatter::Color',
-    lazy_build => 1,
-);
-
-sub _build__color {
-    return TAP::Formatter::Color->new;
-}
-
 sub args {
     my $self = shift;
 
@@ -119,11 +97,6 @@ sub args {
         map { defined $self->$_ ? ( $_ => $self->$_ ) : () }
         map { $_->name } $self->meta->get_all_attributes
     };
-}
-
-sub running_in_parallel {
-    my $self = shift;
-    return $self->jobs > 1 && $self->_has_schedule;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -140,7 +113,7 @@ Test::Class::Moose::Config - Configuration information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.54
+version 0.55
 
 =head1 SYNOPSIS
 
@@ -222,17 +195,6 @@ own if it conforms to the interface.
 =head2 C<randomize>
 
 Boolean. Will run tests in a random order.
-
-=head2 C<jobs>
-
-B<EXPERIMENTAL>: Returns the number of jobs running for the test suite.
-Default is 1.
-
-Only used by C<Test::Class::Moose::Role::Parallel>.
-
-=head2 C<running_in_parallel>
-
-B<EXPERIMENTAL>: Returns true if it appears that we are running in parallel.
 
 =head1 METHODS
 

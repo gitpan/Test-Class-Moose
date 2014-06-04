@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role::Reporting;
-$Test::Class::Moose::Role::Reporting::VERSION = '0.54';
+$Test::Class::Moose::Role::Reporting::VERSION = '0.55'; # TRIAL
 # ABSTRACT: Reporting gathering role
 
 use Moose::Role;
@@ -39,7 +39,7 @@ Test::Class::Moose::Role::Reporting - Reporting gathering role
 
 =head1 VERSION
 
-version 0.54
+version 0.55
 
 =head1 DESCRIPTION
 

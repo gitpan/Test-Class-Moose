@@ -1,5 +1,5 @@
 package Test::Class::Moose::Load;
-$Test::Class::Moose::Load::VERSION = '0.54';
+$Test::Class::Moose::Load::VERSION = '0.55'; # TRIAL
 # ABSTRACT: Load L<Test::Class::Moose> classes automatically.
 
 use strict;
@@ -75,7 +75,7 @@ Test::Class::Moose::Load - Load L<Test::Class::Moose> classes automatically.
 
 =head1 VERSION
 
-version 0.54
+version 0.55
 
 =head1 SYNOPSIS
 
@@ -88,13 +88,15 @@ Note: This helper module was blatantly stolen from L<Test::Class::Load>.
 However, since your author is the person who originally wrote that code, he
 doesn't feel too bad.
 
-L<Test::Class::Moose> typically uses a helper script to load the test classes.
-It often looks something like this:
+Without a loader, you would have to manually load each test class in your test
+file. This would look something like this:
 
  #!/usr/bin/perl -T
 
  use strict;
  use warnings;
+
+ use Test::Class::Moose::Runner;
 
  use lib 't/tests';
 
@@ -102,7 +104,7 @@ It often looks something like this:
  use MyTest::Foo::Bar;
  use MyTest::Foo::Baz;
 
- Test::Class::Moose->runtests;
+ Test::Class::Moose::Runner->runtests;
 
 This causes a problem, though.  When you're writing a test class, it's easy to
 forget to add it to the helper script.  Then you run your huge test suite and
@@ -126,9 +128,10 @@ Using L<Test::Class::Moose::Load> is as simple as this:
  use strict;
  use warnings;
 
+ use Test::Class::Moose::Runner;
  use Test::Class::Moose::Load 't/tests';
 
- Test::Class::Moose->new(\%args)->runtests;
+ Test::Class::Moose::Runner->new(\%args)->runtests;
 
 That will search through all files in the C<t/tests> directory and
 automatically load anything which ends in C<.pm>. You should only put test
@@ -142,7 +145,7 @@ of them in the import list.
    t/order
    t/inventory
  >;
- Test::Class::Moose->runtests;
+ Test::Class::Moose::Runner->runtests;
 
 =head1 ADVANCED USAGE
 
@@ -154,7 +157,7 @@ You can redefine the filtering criteria, that is, decide what classes are
 picked up and what others are not. You do this simply by subclassing
 L<Test::Class::Moose::Load> overriding the C<is_test_class()> method. You
 might want to do this to only load modules which inherit from
-L<Test::Class::Moose>, or anything else for that matter. 
+L<Test::Class::Moose>, or anything else for that matter.
 
 =over 4
 
@@ -183,7 +186,7 @@ For example:
 
       # return unless it's a .pm (the default)
       return unless $class->SUPER::is_test_class( $file, $dir );
-    
+
       # and only allow .pm files with "Good" in their filename
       return $file =~ m{Good};
   }
@@ -208,13 +211,15 @@ Then, just make sure that all of your test classes inherit from your own base
 class which runs the tests for you.  It might looks something like this:
 
  package My::Test::Class::Moose;
- 
+
  use strict;
  use warnings;
 
+ use Test::Class::Moose::Runner;
+
  use base 'Test::Class::Moose';
 
- INIT { Test::Class::Moose->new->runtests } # here's the magic!
+ INIT { Test::Class::Moose::Runner->new->runtests } # here's the magic!
 
  1;
 

@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role;
-$Test::Class::Moose::Role::VERSION = '0.54';
+$Test::Class::Moose::Role::VERSION = '0.55'; # TRIAL
 # ABSTRACT: Test::Class::Moose for roles
 
 use 5.10.0;
@@ -47,7 +47,7 @@ Test::Class::Moose::Role - Test::Class::Moose for roles
 
 =head1 VERSION
 
-version 0.54
+version 0.55
 
 =head1 DESCRIPTION
 

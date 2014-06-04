@@ -1,5 +1,5 @@
 package Test::Class::Moose::AttributeRegistry;
-$Test::Class::Moose::AttributeRegistry::VERSION = '0.54';
+$Test::Class::Moose::AttributeRegistry::VERSION = '0.55'; # TRIAL
 ## ABSTRACT: Global registry of tags by class and method.
 
 use strict;
@@ -187,7 +187,7 @@ Test::Class::Moose::AttributeRegistry - Global registry of tags by class and met
 
 =head1 VERSION
 
-version 0.54
+version 0.55
 
 =head1 SYNOPSIS
 
