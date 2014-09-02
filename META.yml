@@ -9,9 +9,9 @@ build_requires:
   Test::Warnings: '0'
   lib: '0'
 configure_requires:
-  ExtUtils::MakeMaker: '6.30'
+  ExtUtils::MakeMaker: '0'
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 5.019, CPAN::Meta::Converter version 2.131560'
+generated_by: 'Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.142060'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -19,7 +19,6 @@ meta-spec:
 name: Test-Class-Moose
 recommends:
   Parallel::ForkManager: v0.7.6
-  Sub::Attribute: '0.05'
 requires:
   Benchmark: '0'
   Carp: '0'
@@ -46,4 +45,23 @@ resources:
   bugtracker: https://github.com/Ovid/test-class-moose/issues
   homepage: http://ovid.github.io/test-class-moose/
   repository: https://github.com/Ovid/test-class-moose.git
-version: '0.55'
+version: '0.56'
+x_authority: cpan:OVID
+x_contributors:
+  - 'Dave Rolsky <autarch@urth.org>'
+  - 'Doug Bell <doug.bell@baml.com>'
+  - 'Doug Bell <madcityzen@gmail.com>'
+  - 'Gregory Oschwald <goschwald@maxmind.com>'
+  - 'Jonathan C. Otsuka <djgoku@gmail.com>'
+  - 'Karen Etheridge <ether@cpan.org>'
+  - 'Neil Bowers <neil@bowers.com>'
+  - 'Olaf Alders <olaf@wundersolutions.com>'
+  - 'Ovid <curtis@weborama.com>'
+  - 'Ovid <curtis_ovid_poe@yahoo.com>'
+  - 'Paul Boyd <pboyd@dev3l.net>'
+  - 'Petrea Corneliu Stefan <stefan@garage-coding.com>'
+  - 'Steven Humphrey <catchgithub@33k.co.uk>'
+  - 'Stuckdownawell <stuckdownawell@gmail.com>'
+  - 'Tom Beresford <tom.beresford@bskyb.com>'
+  - 'Tom Heady <tom@punch.net>'
+  - 'Udo Oji <Velti@signor.com>'

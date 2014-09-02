@@ -1,5 +1,5 @@
 package Test::Class::Moose::Executor::Parallel;
-$Test::Class::Moose::Executor::Parallel::VERSION = '0.55'; # TRIAL
+$Test::Class::Moose::Executor::Parallel::VERSION = '0.56';
 # ABSTRACT: Execute tests in parallel (parallelized by instance)
 
 use 5.10.0;
@@ -200,7 +200,7 @@ Test::Class::Moose::Executor::Parallel - Execute tests in parallel (parallelized
 
 =head1 VERSION
 
-version 0.55
+version 0.56
 
 =head1 AUTHOR
 

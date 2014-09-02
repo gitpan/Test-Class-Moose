@@ -1,5 +1,5 @@
 package Test::Class::Moose::Runner;
-$Test::Class::Moose::Runner::VERSION = '0.55'; # TRIAL
+$Test::Class::Moose::Runner::VERSION = '0.56';
 # ABSTRACT: Runner for Test::Class::Moose tests
 
 use 5.10.0;
@@ -81,7 +81,7 @@ Test::Class::Moose::Runner - Runner for Test::Class::Moose tests
 
 =head1 VERSION
 
-version 0.55
+version 0.56
 
 =head1 SYNOPSIS
 
@@ -258,7 +258,7 @@ parameter when creating a runner object:
 Your test classes will be run in parallel in separate child processes. Test
 classes are parallelized on a B<per instance basis>. This means that each
 child process constructs a single instance of a test class and runs all of
-that classes methods.
+the methods belonging to that class.
 
 If you are using parameterized test instances (see the L<Test::Class::Moose>
 docs for details) then the same class may have instances running in different

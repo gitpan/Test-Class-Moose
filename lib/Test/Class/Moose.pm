@@ -1,5 +1,5 @@
 package Test::Class::Moose;
-$Test::Class::Moose::VERSION = '0.55'; # TRIAL
+$Test::Class::Moose::VERSION = '0.56';
 # ABSTRACT: Serious testing for serious Perl
 
 use 5.10.0;
@@ -245,7 +245,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 =head1 VERSION
 
-version 0.55
+version 0.56
 
 =head1 SYNOPSIS
 

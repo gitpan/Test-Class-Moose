@@ -4,7 +4,7 @@
       "Curtis \"Ovid\" Poe <ovid@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.019, CPAN::Meta::Converter version 2.131560",
+   "generated_by" : "Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.142060",
    "license" : [
       "perl_5"
    ],
@@ -16,18 +16,18 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.30"
+            "ExtUtils::MakeMaker" : "0"
          }
       },
       "develop" : {
          "requires" : {
-            "Test::Pod" : "1.41"
+            "Test::Pod" : "1.41",
+            "Test::Spelling" : "0.12"
          }
       },
       "runtime" : {
          "recommends" : {
-            "Parallel::ForkManager" : "v0.7.6",
-            "Sub::Attribute" : "0.05"
+            "Parallel::ForkManager" : "v0.7.6"
          },
          "requires" : {
             "Benchmark" : "0",
@@ -54,6 +54,9 @@
          }
       },
       "test" : {
+         "recommends" : {
+            "Test::Output" : "0.0005"
+         },
          "requires" : {
             "Carp::Always" : "0",
             "Scalar::Util" : "0",
@@ -63,7 +66,7 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/Ovid/test-class-moose/issues"
@@ -75,6 +78,26 @@
          "web" : "https://github.com/Ovid/test-class-moose"
       }
    },
-   "version" : "0.55"
+   "version" : "0.56",
+   "x_authority" : "cpan:OVID",
+   "x_contributors" : [
+      "Dave Rolsky <autarch@urth.org>",
+      "Doug Bell <doug.bell@baml.com>",
+      "Doug Bell <madcityzen@gmail.com>",
+      "Gregory Oschwald <goschwald@maxmind.com>",
+      "Jonathan C. Otsuka <djgoku@gmail.com>",
+      "Karen Etheridge <ether@cpan.org>",
+      "Neil Bowers <neil@bowers.com>",
+      "Olaf Alders <olaf@wundersolutions.com>",
+      "Ovid <curtis@weborama.com>",
+      "Ovid <curtis_ovid_poe@yahoo.com>",
+      "Paul Boyd <pboyd@dev3l.net>",
+      "Petrea Corneliu Stefan <stefan@garage-coding.com>",
+      "Steven Humphrey <catchgithub@33k.co.uk>",
+      "Stuckdownawell <stuckdownawell@gmail.com>",
+      "Tom Beresford <tom.beresford@bskyb.com>",
+      "Tom Heady <tom@punch.net>",
+      "Udo Oji <Velti@signor.com>"
+   ]
 }
 

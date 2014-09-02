@@ -1,8 +1,19 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.56 2014-09-02
+        * This is the first release to include the deprecations and backwards
+          incompatibilities from 0.55. Please see that release's notes as
+          well!
+        * Skip parallel tests on Windows. This may be a bug in
+          Test::Class::Moose or Parallel::ForkManager, but for now we're
+          punting. Reported by Alexandr Ciornii. GitHub issue #36.
+        * Removed Sub::Attribute from the "recommends" list. This is required
+          now, and listing it as both required and recommends is confusing.
+        * Lots of doc fixes.
+
 0.55 2014-03-18
-        * A number of deprecations and backwards incompatible changes in this
-          release!
+        * There are a number of deprecations and backwards incompatible
+          changes in this release!
         * Calling runtests() on Test::Class::Moose or a subclass of that class
           is now deprecated. Use the new Test::Class::Moose::Runner class
           instead.
