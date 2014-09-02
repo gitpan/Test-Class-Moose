@@ -43,9 +43,9 @@ requires:
   warnings: '0'
 resources:
   bugtracker: https://github.com/Ovid/test-class-moose/issues
-  homepage: http://ovid.github.io/test-class-moose/
+  homepage: http://test-class-moose.github.io/test-class-moose/
   repository: https://github.com/Ovid/test-class-moose.git
-version: '0.56'
+version: '0.57'
 x_authority: cpan:OVID
 x_contributors:
   - 'Dave Rolsky <autarch@urth.org>'

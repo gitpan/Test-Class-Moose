@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role::Executor;
-$Test::Class::Moose::Role::Executor::VERSION = '0.56';
+$Test::Class::Moose::Role::Executor::VERSION = '0.57';
 # ABSTRACT: Common code for Runner classes
 
 use 5.10.0;
@@ -351,7 +351,7 @@ Test::Class::Moose::Role::Executor - Common code for Runner classes
 
 =head1 VERSION
 
-version 0.56
+version 0.57
 
 =head1 AUTHOR
 

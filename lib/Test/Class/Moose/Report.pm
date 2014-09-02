@@ -1,5 +1,5 @@
 package Test::Class::Moose::Report;
-$Test::Class::Moose::Report::VERSION = '0.56';
+$Test::Class::Moose::Report::VERSION = '0.57';
 # ABSTRACT: Test information for Test::Class::Moose
 
 use 5.10.0;
@@ -103,7 +103,7 @@ Test::Class::Moose::Report - Test information for Test::Class::Moose
 
 =head1 VERSION
 
-version 0.56
+version 0.57
 
 =head1 SYNOPSIS
 

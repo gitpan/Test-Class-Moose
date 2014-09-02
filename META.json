@@ -71,14 +71,14 @@
       "bugtracker" : {
          "web" : "https://github.com/Ovid/test-class-moose/issues"
       },
-      "homepage" : "http://ovid.github.io/test-class-moose/",
+      "homepage" : "http://test-class-moose.github.io/test-class-moose/",
       "repository" : {
          "type" : "git",
          "url" : "https://github.com/Ovid/test-class-moose.git",
          "web" : "https://github.com/Ovid/test-class-moose"
       }
    },
-   "version" : "0.56",
+   "version" : "0.57",
    "x_authority" : "cpan:OVID",
    "x_contributors" : [
       "Dave Rolsky <autarch@urth.org>",

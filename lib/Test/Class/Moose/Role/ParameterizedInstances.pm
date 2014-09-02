@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role::ParameterizedInstances;
-$Test::Class::Moose::Role::ParameterizedInstances::VERSION = '0.56';
+$Test::Class::Moose::Role::ParameterizedInstances::VERSION = '0.57';
 # ABSTRACT: run tests against multiple instances of a test class
 
 use Moose::Role;
@@ -30,7 +30,7 @@ Test::Class::Moose::Role::ParameterizedInstances - run tests against multiple in
 
 =head1 VERSION
 
-version 0.56
+version 0.57
 
 =head1 AUTHOR
 
