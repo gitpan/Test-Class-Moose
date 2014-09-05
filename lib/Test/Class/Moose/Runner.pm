@@ -1,5 +1,5 @@
 package Test::Class::Moose::Runner;
-$Test::Class::Moose::Runner::VERSION = '0.57';
+$Test::Class::Moose::Runner::VERSION = '0.58';
 # ABSTRACT: Runner for Test::Class::Moose tests
 
 use 5.10.0;
@@ -81,7 +81,7 @@ Test::Class::Moose::Runner - Runner for Test::Class::Moose tests
 
 =head1 VERSION
 
-version 0.57
+version 0.58
 
 =head1 SYNOPSIS
 

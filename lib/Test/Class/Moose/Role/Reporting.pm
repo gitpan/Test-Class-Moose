@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role::Reporting;
-$Test::Class::Moose::Role::Reporting::VERSION = '0.57';
+$Test::Class::Moose::Role::Reporting::VERSION = '0.58';
 # ABSTRACT: Reporting gathering role
 
 use Moose::Role;
@@ -19,10 +19,16 @@ has 'notes' => (
     default => sub { {} },
 );
 
-has skipped => (
+has 'skipped' => (
     is        => 'rw',
     isa       => 'Str',
     predicate => 'is_skipped',
+);
+
+has 'passed' => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
 );
 
 1;
@@ -39,7 +45,7 @@ Test::Class::Moose::Role::Reporting - Reporting gathering role
 
 =head1 VERSION
 
-version 0.57
+version 0.58
 
 =head1 DESCRIPTION
 
@@ -73,6 +79,10 @@ If the class or method is skipped, this will return the skip message.
 =head2 C<is_skipped>
 
 Returns true if the class or method is skipped.
+
+=head2 C<passed>
+
+Returns true if the class or method passed.
 
 =head2 C<time>
 

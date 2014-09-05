@@ -1,5 +1,5 @@
 package Test::Class::Moose::Report::Instance;
-$Test::Class::Moose::Report::Instance::VERSION = '0.57';
+$Test::Class::Moose::Report::Instance::VERSION = '0.58';
 # ABSTRACT: Reporting on test classes
 
 use Moose;
@@ -49,7 +49,7 @@ Test::Class::Moose::Report::Instance - Reporting on test classes
 
 =head1 VERSION
 
-version 0.57
+version 0.58
 
 =head1 DESCRIPTION
 

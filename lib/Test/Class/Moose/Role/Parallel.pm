@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role::Parallel;
-$Test::Class::Moose::Role::Parallel::VERSION = '0.57';
+$Test::Class::Moose::Role::Parallel::VERSION = '0.58';
 # ABSTRACT: Deprecated parallel runner role - see docs for details
 
 use 5.10.0;
@@ -27,7 +27,7 @@ Test::Class::Moose::Role::Parallel - Deprecated parallel runner role - see docs 
 
 =head1 VERSION
 
-version 0.57
+version 0.58
 
 =head1 DESCRIPTION
 

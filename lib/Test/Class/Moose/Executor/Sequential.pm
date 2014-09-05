@@ -1,5 +1,5 @@
 package Test::Class::Moose::Executor::Sequential;
-$Test::Class::Moose::Executor::Sequential::VERSION = '0.57';
+$Test::Class::Moose::Executor::Sequential::VERSION = '0.58';
 # ABSTRACT: Execute tests sequentially
 
 use 5.10.0;
@@ -54,7 +54,7 @@ Test::Class::Moose::Executor::Sequential - Execute tests sequentially
 
 =head1 VERSION
 
-version 0.57
+version 0.58
 
 =head1 AUTHOR
 

@@ -1,51 +1,51 @@
 ---
 abstract: 'Serious testing for serious Perl'
 author:
-  - 'Curtis "Ovid" Poe <ovid@cpan.org>'
+  - "Curtis \"Ovid\" Poe <ovid@cpan.org>"
 build_requires:
-  Carp::Always: '0'
-  Scalar::Util: '0'
-  Test::Requires: '0'
-  Test::Warnings: '0'
-  lib: '0'
+  Carp::Always: 0
+  Scalar::Util: 0
+  Test::Requires: 0
+  Test::Warnings: 0
+  lib: 0
 configure_requires:
-  ExtUtils::MakeMaker: '0'
+  ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.142060'
+generated_by: 'Dist::Zilla version 5.014, CPAN::Meta::Converter version 2.140640'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: '1.4'
+  version: 1.4
 name: Test-Class-Moose
 recommends:
   Parallel::ForkManager: v0.7.6
 requires:
-  Benchmark: '0'
-  Carp: '0'
-  Class::MOP: '0'
-  File::Find: '0'
-  File::Spec: '0'
-  List::MoreUtils: '0'
-  List::Util: '0'
-  Moose: '2.0000'
-  Moose::Role: '2.0000'
-  Moose::Util::TypeConstraints: '0'
-  Parallel::ForkManager: '0'
-  Sub::Attribute: '0'
-  TAP::Formatter::Color: '0'
-  TAP::Stream: '0.44'
-  Test::Builder: '0'
-  Test::Most: '0.32'
-  Try::Tiny: '0'
-  namespace::autoclean: '0'
-  perl: '5.010'
-  strict: '0'
-  warnings: '0'
+  Benchmark: 0
+  Carp: 0
+  Class::MOP: 0
+  File::Find: 0
+  File::Spec: 0
+  List::MoreUtils: 0
+  List::Util: 0
+  Moose: 2.0000
+  Moose::Role: 2.0000
+  Moose::Util::TypeConstraints: 0
+  Parallel::ForkManager: 0
+  Sub::Attribute: 0
+  TAP::Formatter::Color: 0
+  TAP::Stream: 0.44
+  Test::Builder: 0
+  Test::Most: 0.32
+  Try::Tiny: 0
+  namespace::autoclean: 0
+  perl: 5.010
+  strict: 0
+  warnings: 0
 resources:
   bugtracker: https://github.com/Ovid/test-class-moose/issues
   homepage: http://test-class-moose.github.io/test-class-moose/
   repository: https://github.com/Ovid/test-class-moose.git
-version: '0.57'
+version: 0.58
 x_authority: cpan:OVID
 x_contributors:
   - 'Dave Rolsky <autarch@urth.org>'

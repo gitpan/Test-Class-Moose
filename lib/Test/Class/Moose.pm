@@ -1,5 +1,5 @@
 package Test::Class::Moose;
-$Test::Class::Moose::VERSION = '0.57';
+$Test::Class::Moose::VERSION = '0.58';
 # ABSTRACT: Serious testing for serious Perl
 
 use 5.10.0;
@@ -245,7 +245,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 =head1 VERSION
 
-version 0.57
+version 0.58
 
 =head1 SYNOPSIS
 
@@ -800,10 +800,13 @@ wrong).
     foreach my $class ( $report->all_test_instances ) {
         my $class_name = $class->name;
         ok !$class->is_skipped, "$class_name was not skipped";
+        ok $class->passed, "$class_name passed";
 
         subtest "$class_name methods" => sub {
             foreach my $method ( $class->all_test_methods ) {
                 my $method_name = $method->name;
+                ok $method->passed, "$method_name passed";
+
                 ok !$method->is_skipped, "$method_name was not skipped";
                 cmp_ok $method->num_tests, '>', 0,
                   '... and some tests should have been run';

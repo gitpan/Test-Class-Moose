@@ -1,5 +1,5 @@
 package Test::Class::Moose::Role::Timing;
-$Test::Class::Moose::Role::Timing::VERSION = '0.57';
+$Test::Class::Moose::Role::Timing::VERSION = '0.58';
 # ABSTRACT: Report timing role
 
 use Moose::Role;
@@ -33,8 +33,16 @@ has '_end_benchmark' => (
 );
 
 has 'time' => (
-    is  => 'rw',
-    isa => 'Test::Class::Moose::Report::Time',
+    is      => 'rw',
+    isa     => 'Test::Class::Moose::Report::Time',
+    default => sub {
+
+        # return a "zero" if no time is set
+        my $self      = shift;
+        my $benchmark = Benchmark->new;
+        return Test::Class::Moose::Report::Time->new(
+            timediff( $benchmark, $benchmark ) );
+    },
 );
 
 1;
@@ -51,7 +59,7 @@ Test::Class::Moose::Role::Timing - Report timing role
 
 =head1 VERSION
 
-version 0.57
+version 0.58
 
 =head1 DESCRIPTION
 
@@ -68,7 +76,8 @@ None.
 =head2 C<time>
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
-represents the duration of this class or method.
+represents the duration of this class or method. The duration may be "0" if
+it's an abstract class with no tests run.
 
 =head1 AUTHOR
 
